@@ -17,7 +17,9 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { AccessibilityModeBanner } from "@/components/accessibility/AccessibilityModeBanner";
 import { AccessibleQuickActions } from "@/components/accessibility/AccessibleQuickActions";
 import { BrandLogo } from "@/components/branding/BrandLogo";
+import { DomainIconBadge, DomainId } from "@/components/branding/DomainIconBadge";
 import { api } from "@/services/api";
+
 import { speechSynthesis } from "@/services/voice/speechSynthesis";
 
 
@@ -371,12 +373,15 @@ export default function HomeDashboard() {
             accessibilityRole="button"
             accessibilityLabel={`${domain.title}, ${domain.desc}`}
           >
-            <Text style={styles.domainIcon}>{domain.icon}</Text>
+            <View style={{ marginBottom: 10 }}>
+              <DomainIconBadge domain={domain.id as DomainId} size="medium" />
+            </View>
             <Text style={styles.domainTitle}>{domain.title}</Text>
             <Text style={styles.domainDesc}>{domain.desc}</Text>
           </Pressable>
         ))}
       </View>
+
     </Screen>
   );
 }

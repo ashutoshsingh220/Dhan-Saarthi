@@ -15,9 +15,11 @@ import { Button } from "@/components/Form";
 import { Screen } from "@/components/Screen";
 import { colors } from "@/constants/theme";
 import { api } from "@/services/api";
+import { useAuth } from "@/context/AuthContext";
 import { LearningModule, QuizQuestion, QuizResult } from "@/types/api";
 
 export default function LearnDetailScreen() {
+  const { token } = useAuth();
   const params = useLocalSearchParams<{ moduleId?: string }>();
   const moduleId = params.moduleId || "savings-basics";
 
@@ -33,12 +35,11 @@ export default function LearnDetailScreen() {
 
   useEffect(() => {
     fetchModuleDetail();
-  }, [moduleId]);
+  }, [moduleId, token]);
 
   const fetchModuleDetail = async () => {
     try {
       setLoading(true);
-      const token = await SecureStore.getItemAsync("user_token");
       if (!token) return;
       const data = await api.getLearningModuleDetail(moduleId, token);
       setModuleData(data);
@@ -55,7 +56,6 @@ export default function LearnDetailScreen() {
 
   const handleOpenQuiz = async () => {
     try {
-      const token = await SecureStore.getItemAsync("user_token");
       if (!token) return;
       const questions = await api.getLearningQuiz(moduleId, token);
       setQuizQuestions(questions);
@@ -79,7 +79,6 @@ export default function LearnDetailScreen() {
 
     try {
       setSubmittingQuiz(true);
-      const token = await SecureStore.getItemAsync("user_token");
       if (!token) return;
 
       const answersArray = quizQuestions.map((_, idx) => selectedAnswers[idx]);
@@ -93,6 +92,7 @@ export default function LearnDetailScreen() {
       setSubmittingQuiz(false);
     }
   };
+
 
   const askSaarthiAboutTopic = () => {
     if (!moduleData) return;

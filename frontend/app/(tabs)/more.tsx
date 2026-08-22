@@ -12,6 +12,7 @@ import type { EducationLevel, ExplanationLevel, FinancialKnowledgeLevel, Occupat
 import { useAccessibility } from "@/context/AccessibilityContext";
 import type { AccessibilityProfile, TextSizePreference } from "@/services/accessibility/accessibilityTypes";
 import { BrandLogo } from "@/components/branding/BrandLogo";
+import { DomainIconBadge, DomainId } from "@/components/branding/DomainIconBadge";
 
 
 export default function MoreTab() {
@@ -78,9 +79,8 @@ export default function MoreTab() {
       );
       setProfile(updated);
       setPersonSaved(true);
-      setTimeout(() => setPersonSaved(false), 3000);
-    } catch (err) {
-      setPersonError(t("personalization.save_error"));
+    } catch (e) {
+      setPersonError(e instanceof Error ? e.message : "Failed to save personalization preferences");
     } finally {
       setPersonSaving(false);
     }
@@ -113,16 +113,15 @@ export default function MoreTab() {
     }
   };
 
-  const domainLinks = [
-    { title: "Financial Twin Detail", icon: "🧬", path: "/twin-detail", sub: "View complete Twin score & profile" },
-    { title: "Financial Guidance", icon: "🧭", path: "/domain/recommendations", sub: "Surplus allocation & priority guidance" },
-    { title: "AI Saarthi", icon: "🤖", path: "/(tabs)/saarthi", sub: "Voice & text companion" },
-    { title: "Financial Literacy", icon: "📚", path: "/(tabs)/learn", sub: "Personalized learning modules" },
-    { title: "Smart Planning", icon: "🎯", path: "/domain/planning", sub: "Goals & budget tracker" },
-    { title: "Market Intelligence", icon: "📈", path: "/domain/market-intelligence", sub: "Market Pulse, Nifty, Sensex, Gold & USD/INR" },
-    { title: "Government Support", icon: "🏛️", path: "/domain/schemes", sub: "Kisan & Small Business schemes" },
-    { title: "Scam Shield", icon: "🛡️", path: "/domain/scam-shield", sub: "Fraud detection & QR verify" },
-    { title: "Inclusive Finance", icon: "🤝", path: "/domain/inclusive", sub: "Accessibility & schemes" },
+  const domainLinks: { title: string; domainId: DomainId; path: string; sub: string }[] = [
+    { title: "Financial Twin Detail", domainId: "twin", path: "/twin-detail", sub: "View complete Twin score & profile" },
+    { title: "Financial Guidance", domainId: "recommendations", path: "/domain/recommendations", sub: "Surplus allocation & priority guidance" },
+    { title: "AI Saarthi", domainId: "saarthi", path: "/(tabs)/saarthi", sub: "Voice & text companion" },
+    { title: "Financial Literacy", domainId: "learn", path: "/(tabs)/learn", sub: "Personalized learning modules" },
+    { title: "Smart Planning", domainId: "planning", path: "/domain/planning", sub: "Goals & budget tracker" },
+    { title: "Market Intelligence", domainId: "market", path: "/domain/market-intelligence", sub: "Market Pulse, Nifty, Sensex, Gold & USD/INR" },
+    { title: "Government Support", domainId: "schemes", path: "/domain/schemes", sub: "Kisan & Small Business schemes" },
+    { title: "Scam Shield", domainId: "scam", path: "/domain/scam-shield", sub: "Fraud detection & QR verify" },
   ];
 
 
@@ -451,7 +450,9 @@ export default function MoreTab() {
               accessibilityRole="button"
               accessibilityLabel={`${item.title}, ${item.sub}`}
             >
-              <Text style={styles.menuIcon}>{item.icon}</Text>
+              <View style={{ marginRight: 12 }}>
+                <DomainIconBadge domain={item.domainId} size="small" />
+              </View>
               <View style={styles.menuTextContainer}>
                 <Text style={styles.menuTitle}>{item.title}</Text>
                 <Text style={styles.menuSub}>{item.sub}</Text>
@@ -459,6 +460,7 @@ export default function MoreTab() {
               <Text style={styles.menuChevron}>→</Text>
             </Pressable>
           ))}
+
         </View>
 
         <View style={styles.actionSection}>

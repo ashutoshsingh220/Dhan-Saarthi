@@ -15,13 +15,17 @@ import LearnDetailScreen from "@/app/domain/learn-detail";
 import { Screen } from "@/components/Screen";
 import { colors } from "@/constants/theme";
 import { api } from "@/services/api";
+import { useAuth } from "@/context/AuthContext";
 import {
   LearningModule,
   LearningProgressSummary,
   LearningRecommendation,
 } from "@/types/api";
 
+import { DomainIconBadge } from "@/components/branding/DomainIconBadge";
+
 export default function LearnTab() {
+  const { token } = useAuth();
   const [modules, setModules] = useState<LearningModule[]>([]);
   const [progressSummary, setProgressSummary] = useState<LearningProgressSummary | null>(null);
   const [recommendations, setRecommendations] = useState<LearningRecommendation[]>([]);
@@ -34,13 +38,12 @@ export default function LearnTab() {
   useFocusEffect(
     useCallback(() => {
       loadData();
-    }, [])
+    }, [token])
   );
 
   const loadData = async () => {
     try {
       setLoading(true);
-      const token = await SecureStore.getItemAsync("user_token");
       if (!token) return;
 
       const [mods, prog, recs] = await Promise.all([
@@ -89,25 +92,6 @@ export default function LearnTab() {
     }
   };
 
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case "Basics":
-        return "💰";
-      case "Budgeting":
-        return "📊";
-      case "Credit":
-        return "💳";
-      case "Safety":
-        return "🛡️";
-      case "Investing":
-        return "📈";
-      case "Goals":
-        return "🎯";
-      default:
-        return "📚";
-    }
-  };
-
   return (
     <Screen style={styles.container}>
       <ScrollView
@@ -117,10 +101,13 @@ export default function LearnTab() {
       >
         {/* HEADER */}
         <View style={styles.header}>
-          <Text style={styles.headerIcon}>📚</Text>
+          <View style={{ marginBottom: 10 }}>
+            <DomainIconBadge domain="learn" size="large" />
+          </View>
           <Text style={styles.headerTitle}>Learn & Grow</Text>
           <Text style={styles.headerSubtitle}>Build stronger financial habits, one step at a time.</Text>
         </View>
+
 
         {/* PROGRESS SUMMARY CARD */}
         {progressSummary && (
@@ -183,8 +170,9 @@ export default function LearnTab() {
                 onPress={() => setSelectedModuleId(m.module_id)}
               >
                 <View style={styles.moduleLeft}>
-                  <Text style={styles.moduleIcon}>{getCategoryIcon(m.category)}</Text>
+                  <DomainIconBadge domain="learn" size="medium" />
                   <View style={{ flex: 1 }}>
+
                     <View style={styles.moduleTagRow}>
                       <Text style={styles.moduleCategory}>{m.category.toUpperCase()}</Text>
                       <Text style={styles.moduleDot}>•</Text>
