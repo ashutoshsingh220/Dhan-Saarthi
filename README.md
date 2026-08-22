@@ -1,16 +1,15 @@
 <p align="center">
-  <img src="frontend/assets/branding/dhan-saarthi-logo.png" alt="Dhan Saarthi Official Logo" width="380"/>
+  <img src="frontend/assets/branding/dhan-saarthi-logo.png" alt="Dhan Saarthi Official Logo" width="360"/>
 </p>
 
 <h1 align="center">⚡ DHAN SAARTHI (धन सारथी) ⚡</h1>
-<h3 align="center">🚀 Production-Grade AI Financial Companion & Deterministic Financial Twin Engine 🚀</h3>
+<h3 align="center">🚀 AI-Powered Personal Financial Companion & Deterministic Financial Twin Engine 🚀</h3>
 
 <p align="center">
   <b><i>Guiding Dreams. Empowering Futures. Built for 1.4 Billion Indians.</i></b>
 </p>
 
 <p align="center">
-  <a href="#-key-features"><img src="https://img.shields.io/badge/Platform-Production_Ready-brightgreen?style=for-the-badge&logo=rocket" alt="Production Ready"/></a>
   <a href="#-tech-stack"><img src="https://img.shields.io/badge/React_Native-Expo_SDK_52-61DAFB?style=for-the-badge&logo=react" alt="Expo SDK 52"/></a>
   <a href="#-tech-stack"><img src="https://img.shields.io/badge/TypeScript-Strict_0_Errors-3178C6?style=for-the-badge&logo=typescript" alt="TypeScript"/></a>
   <a href="#-tech-stack"><img src="https://img.shields.io/badge/Backend-Python_3.11_%7C_FastAPI-3776AB?style=for-the-badge&logo=fastapi" alt="FastAPI"/></a>
@@ -21,34 +20,22 @@
 
 ---
 
-## 🌟 WHY DHAN SAARTHI IS CRAZY UNIQUE
+## 👤 Author & Project Ownership
 
-Traditional financial apps fail India's diverse population by pushing complex jargon, English-only interfaces, static spreadsheets, and generic stock tips.
+**Developed & Maintained by**: **[Ashutosh Singh](https://github.com/ashutoshsingh220)**  
+**Repository**: [github.com/ashutoshsingh220/Dhan-Saarthi](https://github.com/ashutoshsingh220/Dhan-Saarthi)  
 
-**Dhan Saarthi (धन सारथी)** changes the game. It is a **full-stack, multi-lingual, voice-first, accessibility-engineered AI Financial Companion** centered around a **100% Deterministic Financial Twin Engine**. 
-
-> 💡 **Core Engineering Rule**: No LLM hallucinates financial calculations. All metrics (Health Scores, Buffer Days, Goal Feasibility, Allocation Ranges, Scam Risk Scores) are computed by **authoritative Python engines**, while **Google Gemini Pro** acts as the empathetic, multi-lingual companion guided by a **13-Tier Master Context Orchestrator**.
+> 🔒 **Ownership & Copyright Notice**: Copyright © 2026 Ashutosh Singh. All rights reserved. This project, including all architectural designs, algorithms, codebases, and documentation, is owned exclusively by Ashutosh Singh.
 
 ---
 
-## 📸 APPLICATION PREVIEW & VISUAL SHOWCASE
+## 🌟 Executive Overview
 
-<table align="center">
-  <tr>
-    <td align="center" width="33%">
-      <b>🧬 Central Financial Twin</b><br/><br/>
-      <img src="frontend/assets/screenshots/dashboard-preview.png" alt="Dashboard Preview" width="280"/>
-    </td>
-    <td align="center" width="33%">
-      <b>📊 Twin Breakdown & Cashflow</b><br/><br/>
-      <img src="frontend/assets/screenshots/twin-detail-preview.png" alt="Twin Detail Preview" width="280"/>
-    </td>
-    <td align="center" width="33%">
-      <b>🎙️ AI Saarthi Voice Experience</b><br/><br/>
-      <img src="frontend/assets/screenshots/ai-saarthi-chat.png" alt="AI Saarthi Voice Chat" width="280"/>
-    </td>
-  </tr>
-</table>
+**Dhan Saarthi (धन सारथी)** is an enterprise-grade, accessibility-first, AI-driven personal financial companion designed to solve financial fragmentation and exclusion across urban, rural, low-literacy, and visually-impaired demographics in India.
+
+Built around a **Deterministic Financial Twin Engine**, Dhan Saarthi translates raw income, expense, and savings data into an authoritative **Financial Health Score (0–100)**, real-time risk profile, personalized goal planning, fraud protection, government scheme discovery, and live market intelligence — communicated in English, Hindi, and Hinglish via text and high-performance streaming voice.
+
+> 💡 **Core Engineering Rule**: No LLM hallucinates financial calculations. All metrics (Health Scores, Buffer Days, Goal Feasibility, Allocation Ranges, Scam Risk Scores) are computed by **authoritative Python engines**, while **Google Gemini Pro** acts as the empathetic, multi-lingual companion guided by a **13-Tier Master Context Orchestrator**.
 
 ---
 
@@ -93,7 +80,7 @@ flowchart TB
 
 ---
 
-## 🔥 14 POWERFUL MODULES IMPLEMENTED & VERIFIED
+## 🔥 CORE MODULES IMPLEMENTED & VERIFIED
 
 ### 1. 🧬 Financial Twin Dashboard & Health Score (0–100)
 - Computes a transparent, deterministic **Financial Health Score (0–100)** based on surplus ratios, liquid savings buffer months, and expense ratios.
@@ -232,6 +219,7 @@ npx expo start
 
 ---
 
-<p align="center">
-  <b>Dhan Saarthi (धन सारथी) — Built with ❤️ for Financial Inclusion in India.</b>
-</p>
+## 📄 License & Ownership
+
+Copyright © 2026 **Ashutosh Singh**. All Rights Reserved.  
+Created and developed by **Ashutosh Singh** ([@ashutoshsingh220](https://github.com/ashutoshsingh220)).
