@@ -43,19 +43,45 @@ async function request<T>(path: string, options: RequestInit = {}, token?: strin
       },
     });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(typeof data.detail === "string" ? data.detail : "Something went wrong. Please try again.");
+    if (!response.ok) {
+      if (typeof data.detail === "string") throw new Error(data.detail);
+      if (Array.isArray(data.detail) && data.detail.length > 0) {
+        const firstErr = data.detail[0];
+        if (typeof firstErr.msg === "string") {
+          const fieldName = Array.isArray(firstErr.loc) ? firstErr.loc[firstErr.loc.length - 1] : "";
+          throw new Error(fieldName ? `Invalid ${fieldName}: ${firstErr.msg}` : firstErr.msg);
+        }
+      }
+      throw new Error("Something went wrong. Please try again.");
+    }
     return data as T;
   } catch (error) {
-    if (error instanceof Error && error.message !== "Network request failed") throw error;
-    throw new Error("Unable to reach Dhan Saarthi. Check your network and API URL.");
+    if (error instanceof Error && error.message !== "Network request failed" && !error.message.includes("fetch")) {
+      throw error;
+    }
+    throw new Error("Unable to reach Dhan Saarthi. Please ensure backend is running.");
   }
 }
 
 export const api = {
   register: (full_name: string, email: string, password: string) =>
-    request<AuthResult>("/auth/register", { method: "POST", body: JSON.stringify({ full_name, email, password }) }),
+    request<AuthResult>("/auth/register", {
+      method: "POST",
+      body: JSON.stringify({
+        full_name: full_name.trim(),
+        email: email.trim().toLowerCase(),
+        password,
+      }),
+    }),
   login: (email: string, password: string) =>
-    request<AuthResult>("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }),
+    request<AuthResult>("/auth/login", {
+      method: "POST",
+      body: JSON.stringify({
+        email: email.trim().toLowerCase(),
+        password,
+      }),
+    }),
+
   me: (token: string) => request<{ user: User; onboarding_complete: boolean }>("/auth/me", {}, token),
   getProfile: (token: string) => request<ProfileResponse>("/profile", {}, token),
   saveProfile: (payload: ProfilePayload, token: string) =>

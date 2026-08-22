@@ -16,10 +16,11 @@ export default function Login() {
 
   const submit = async () => {
     setError(undefined);
-    if (!email || !password) return setError("Enter your email and password.");
+    const cleanEmail = email.trim();
+    if (!cleanEmail || !password) return setError("Enter your email and password.");
     setBusy(true);
     try {
-      const result = await api.login(email, password);
+      const result = await api.login(cleanEmail, password);
       await authenticate(result);
       router.replace(result.onboarding_complete ? "/dashboard" : "/onboarding");
     } catch (e) {
@@ -28,6 +29,7 @@ export default function Login() {
       setBusy(false);
     }
   };
+
 
   return (
     <Screen>

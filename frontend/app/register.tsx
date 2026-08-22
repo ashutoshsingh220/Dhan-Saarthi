@@ -18,11 +18,14 @@ export default function Register() {
 
   const submit = async () => {
     setError(undefined);
-    if (!name || !email || password.length < 8) return setError("Enter your name, email, and a password of at least 8 characters.");
+    const cleanName = name.trim();
+    const cleanEmail = email.trim();
+    if (!cleanName || !cleanEmail || password.length < 8)
+      return setError("Enter your name, email, and a password of at least 8 characters.");
     if (password !== confirm) return setError("Passwords do not match.");
     setBusy(true);
     try {
-      await authenticate(await api.register(name, email, password));
+      await authenticate(await api.register(cleanName, cleanEmail, password));
       router.replace("/onboarding");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Unable to create your account.");
@@ -30,6 +33,7 @@ export default function Register() {
       setBusy(false);
     }
   };
+
 
   return (
     <Screen>
