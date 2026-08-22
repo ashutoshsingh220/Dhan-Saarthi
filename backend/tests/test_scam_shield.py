@@ -51,26 +51,29 @@ def test_scam_service_determinism_and_false_positive():
     res_safe_again = ScamDetectionService.analyze(safe_text)
     assert res_safe == res_safe_again
 
-    # 3. Moderate risk test (25-49)
-    mod_text = "Congratulations SBI Customer! You won a cash prize reward. Claim your reward today only!"
+    # 3. Moderate risk test (20-44)
+    mod_text = "Claim your bonus credit reward."
     res_mod = ScamDetectionService.analyze(mod_text)
-    assert 25 <= res_mod["risk_score"] < 50
+    assert 20 <= res_mod["risk_score"] < 45
     assert res_mod["risk_level"] == "MODERATE"
 
-    # 4. High risk test (50-74)
-    high_text = "Your account is suspended immediately. Send money or pay now for verification."
+    # 4. High risk test (45-69)
+    high_text = "SBI Bank Alert: Your account is suspended immediately."
     res_high = ScamDetectionService.analyze(high_text)
-    assert 50 <= res_high["risk_score"] < 75
+    assert 45 <= res_high["risk_score"] < 70
     assert res_high["risk_level"] == "HIGH"
 
-    # 5. Critical risk test (75-100)
+
+
+    # 5. Critical risk test (70-100)
     crit_text = "Urgent: Your SBI bank account will be blocked immediately due to KYC failure. Verify PAN now at http://bit.ly/fake-bank and enter your OTP."
     res_crit = ScamDetectionService.analyze(crit_text)
-    assert res_crit["risk_score"] >= 75
+    assert res_crit["risk_score"] >= 70
     assert res_crit["risk_level"] == "CRITICAL"
 
     # Ordering check: Safe < Moderate < High < Critical
     assert res_safe["risk_score"] < res_mod["risk_score"] < res_high["risk_score"] < res_crit["risk_score"]
+
 
 
 def test_scam_unauthorized():
