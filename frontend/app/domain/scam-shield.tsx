@@ -15,9 +15,13 @@ import { Button } from "@/components/Form";
 import { Screen } from "@/components/Screen";
 import { colors } from "@/constants/theme";
 import { api } from "@/services/api";
-import { ScamScan } from "@/types/api";
+
+import { useAuth } from "@/context/AuthContext";
+import type { ScamScan } from "@/types/api";
+
 
 export default function ScamShieldScreen() {
+  const { token } = useAuth();
   const [inputText, setInputText] = useState("");
   const [analyzing, setAnalyzing] = useState(false);
   const [currentScan, setCurrentScan] = useState<ScamScan | null>(null);
@@ -26,12 +30,11 @@ export default function ScamShieldScreen() {
 
   useEffect(() => {
     fetchHistory();
-  }, []);
+  }, [token]);
 
   const fetchHistory = async () => {
     try {
       setLoadingHistory(true);
-      const token = await SecureStore.getItemAsync("user_token");
       if (!token) return;
       const res = await api.getScamHistory(token);
       setHistory(res.scans);
@@ -50,7 +53,6 @@ export default function ScamShieldScreen() {
 
     try {
       setAnalyzing(true);
-      const token = await SecureStore.getItemAsync("user_token");
       if (!token) {
         Alert.alert("Authentication Error", "Please sign in to analyze messages.");
         return;
@@ -65,6 +67,7 @@ export default function ScamShieldScreen() {
       setAnalyzing(false);
     }
   };
+
 
   const askSaarthiAboutScan = (scan: ScamScan) => {
     const promptMessage = `Can you explain why this message was flagged as ${scan.risk_level} risk (${scan.risk_score}/100)? Message: "${scan.input_text}"`;
@@ -185,7 +188,7 @@ export default function ScamShieldScreen() {
             {currentScan.indicators && currentScan.indicators.length > 0 && (
               <View style={styles.sectionBox}>
                 <Text style={styles.sectionHeading}>⚠️ Why This Was Flagged ({currentScan.indicators.length} signals)</Text>
-                {currentScan.indicators.map((ind, idx) => (
+                {currentScan.indicators.map((ind: { indicator_type: string; matched_text: string; points: number }, idx: number) => (
                   <View key={idx} style={styles.indicatorRow}>
                     <Text style={styles.indicatorDot}>•</Text>
                     <View style={{ flex: 1 }}>
@@ -202,7 +205,8 @@ export default function ScamShieldScreen() {
             {/* Recommended Actions */}
             <View style={styles.sectionBox}>
               <Text style={styles.sectionHeading}>🛡️ Recommended Safety Actions</Text>
-              {currentScan.recommended_actions.map((action, idx) => (
+              {currentScan.recommended_actions.map((action: string, idx: number) => (
+
                 <View key={idx} style={styles.actionRow}>
                   <Text style={styles.actionCheck}>✓</Text>
                   <Text style={styles.actionText}>{action}</Text>

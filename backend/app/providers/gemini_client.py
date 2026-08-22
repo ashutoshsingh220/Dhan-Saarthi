@@ -50,11 +50,15 @@ class GeminiClient:
             config = types.GenerateContentConfig(
                 system_instruction=full_system_instruction,
                 temperature=0.7,
-                max_output_tokens=800,
+                max_output_tokens=3072,
             )
 
-            # Try models in order of preference
-            models_to_try = ["gemini-3.6-flash", "gemini-2.5-flash", "gemini-1.5-flash"]
+            models_to_try = [
+                "models/gemini-3.6-flash",
+                "models/gemini-3.5-flash",
+                "models/gemini-flash-latest",
+                "models/gemini-pro-latest",
+            ]
             last_err = None
 
             for model_name in models_to_try:
@@ -86,7 +90,7 @@ class GeminiClient:
                     "Please check your GEMINI_API_KEY in backend/.env.local and get a valid key from Google AI Studio."
                 )
 
-            return "Saarthi is temporarily unavailable. Please try again shortly."
+            return f"Saarthi AI encounter: {err_msg[:120]}... Please try asking your question again."
 
     def generate_response_stream(
         self,
@@ -131,10 +135,15 @@ class GeminiClient:
             config = types.GenerateContentConfig(
                 system_instruction=full_system_instruction,
                 temperature=0.7,
-                max_output_tokens=800,
+                max_output_tokens=3072,
             )
 
-            models_to_try = ["gemini-3.6-flash", "gemini-2.5-flash", "gemini-1.5-flash"]
+            models_to_try = [
+                "models/gemini-3.6-flash",
+                "models/gemini-3.5-flash",
+                "models/gemini-flash-latest",
+                "models/gemini-pro-latest",
+            ]
             stream_success = False
 
             for model_name in models_to_try:
@@ -159,5 +168,4 @@ class GeminiClient:
         except Exception as e:
             err_msg = str(e)
             logger.error(f"Gemini API streaming failed: {type(e).__name__} - {err_msg}")
-            yield "Saarthi is temporarily unavailable. Please try again shortly."
-
+            yield f"Saarthi AI encounter: {err_msg[:120]}... Please try asking your question again."
