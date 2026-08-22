@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { router } from "expo-router";
 import { Button, ErrorText, Field } from "@/components/Form";
 import { Screen } from "@/components/Screen";
 import { BrandLogo } from "@/components/branding/BrandLogo";
+import { colors } from "@/constants/theme";
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/services/api";
 
@@ -30,7 +31,6 @@ export default function Login() {
     }
   };
 
-
   return (
     <Screen>
       <View style={styles.brandHeader}>
@@ -42,6 +42,10 @@ export default function Login() {
       <Field label="Email" value={email} onChangeText={setEmail} keyboardType="email-address" />
       <Field label="Password" value={password} onChangeText={setPassword} secureTextEntry />
       <Button title={busy ? "Logging in…" : "Log in"} onPress={submit} disabled={busy} />
+
+      <Pressable onPress={() => router.push("/register")} style={styles.linkRow}>
+        <Text style={styles.linkLabel}>Don't have an account? <Text style={styles.linkBold}>Create account</Text></Text>
+      </Pressable>
     </Screen>
   );
 }
@@ -51,5 +55,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 20,
     marginTop: 10,
+  },
+  linkRow: {
+    marginTop: 20,
+    alignItems: "center",
+    paddingVertical: 8,
+  },
+  linkLabel: {
+    fontSize: 14,
+    color: "#64748B",
+  },
+  linkBold: {
+    color: colors.purple,
+    fontWeight: "700",
   },
 });
