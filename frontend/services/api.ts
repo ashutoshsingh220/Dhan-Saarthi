@@ -33,8 +33,9 @@ import {
 const baseUrl = process.env.EXPO_PUBLIC_API_BASE_URL || "http://localhost:8000/api";
 
 async function request<T>(path: string, options: RequestInit = {}, token?: string): Promise<T> {
+  let response: Response;
   try {
-    const response = await fetch(`${baseUrl}${path}`, {
+    response = await fetch(`${baseUrl}${path}`, {
       ...options,
       headers: {
         "Content-Type": "application/json",
@@ -42,26 +43,29 @@ async function request<T>(path: string, options: RequestInit = {}, token?: strin
         ...options.headers,
       },
     });
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      if (typeof data.detail === "string") throw new Error(data.detail);
-      if (Array.isArray(data.detail) && data.detail.length > 0) {
-        const firstErr = data.detail[0];
-        if (typeof firstErr.msg === "string") {
-          const fieldName = Array.isArray(firstErr.loc) ? firstErr.loc[firstErr.loc.length - 1] : "";
-          throw new Error(fieldName ? `Invalid ${fieldName}: ${firstErr.msg}` : firstErr.msg);
-        }
-      }
-      throw new Error("Something went wrong. Please try again.");
-    }
-    return data as T;
-  } catch (error) {
-    if (error instanceof Error && error.message !== "Network request failed" && !error.message.includes("fetch")) {
-      throw error;
-    }
+  } catch (fetchErr) {
     throw new Error("Unable to reach Dhan Saarthi. Please ensure backend is running.");
   }
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    if (typeof data.detail === "string") {
+      throw new Error(data.detail);
+    }
+    if (Array.isArray(data.detail) && data.detail.length > 0) {
+      const firstErr = data.detail[0];
+      if (typeof firstErr.msg === "string") {
+        const fieldName = Array.isArray(firstErr.loc) ? firstErr.loc[firstErr.loc.length - 1] : "";
+        throw new Error(fieldName ? `Invalid ${fieldName}: ${firstErr.msg}` : firstErr.msg);
+      }
+    }
+    throw new Error("Something went wrong. Please try again.");
+  }
+
+  return data as T;
 }
+
 
 export const api = {
   register: (full_name: string, email: string, password: string) =>
