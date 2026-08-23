@@ -87,9 +87,10 @@ export default function Onboarding() {
   const { token, setTwin } = useAuth();
   const { t } = useLanguage();
 
-  const patch = (key: keyof typeof form, value: string) => setForm({ ...form, [key]: value });
+  const patch = (key: keyof typeof form, value: string) => setForm((prev) => ({ ...prev, [key]: value }));
   const patchP = <K extends keyof typeof initialPersonalization>(key: K, value: (typeof initialPersonalization)[K]) =>
-    setPersonalization({ ...personalization, [key]: value });
+    setPersonalization((prev) => ({ ...prev, [key]: value }));
+
 
   const toProfile = () => {
     if (!form.preferred_language) return setError("Choose a language.");
@@ -178,7 +179,8 @@ export default function Onboarding() {
         <Field label="City (optional)" value={form.city} onChangeText={(v) => patch("city", v)} />
         <Field label="Monthly income (₹)" value={form.monthly_income} onChangeText={(v) => patch("monthly_income", v)} keyboardType="numeric" />
         <Field label="Monthly expenses (₹)" value={form.monthly_expenses} onChangeText={(v) => patch("monthly_expenses", v)} keyboardType="numeric" />
-        <Field label="Monthly savings (₹)" value={form.monthly_savings} onChangeText={(v) => { patch("monthly_savings", v); patch("savings", v); }} keyboardType="numeric" placeholder="e.g. 25000" />
+        <Field label="Monthly savings (₹)" value={form.monthly_savings} onChangeText={(v) => patch("monthly_savings", v)} keyboardType="numeric" placeholder="e.g. 25000" />
+
         <Field label="Total accumulated savings (₹)" value={form.total_savings} onChangeText={(v) => patch("total_savings", v)} keyboardType="numeric" placeholder="e.g. 300000" />
         <Field label="Primary financial goal" value={form.financial_goal} onChangeText={(v) => patch("financial_goal", v)} placeholder="e.g. Buy a home" />
         <Text style={styles.label}>Risk preference</Text>
