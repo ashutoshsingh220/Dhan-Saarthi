@@ -2,31 +2,38 @@
 
 ## Current phase
 
-**PROMPT 8A — FIX USER FINANCIAL PROFILE + UNIVERSAL ASK SAARTHI INTEGRATION (COMPLETED AND VERIFIED)**
+**MARKET PLUS LIVE DATA AUDIT & FIX (COMPLETED AND VERIFIED)**
 
 ## Completed work
 
-- **Task A (Age Only & DOB Removal)**: Removed Date of Birth from active onboarding flow. User onboarding and profile settings now collect and validate `Age` (numeric, 18-120). Database column `user_profiles.date_of_birth` remains for legacy compatibility, but age is stored directly in `user_profiles.age`.
-- **Task B (Total Savings vs. Monthly Savings)**: Extended `UserProfile` model and profile schemas with `total_savings` (accumulated wealth so far) and `monthly_savings` (typical monthly savings). Added `total_savings` and `monthly_savings` inputs to `onboarding.tsx` and `more.tsx`.
-- **Task C (Financial Twin Score Engine Calibration)**: Refactored `calculate_initial_twin` in `backend/app/services/twin.py` to calculate liquid emergency buffer months from `total_savings / monthly_expenses` and evaluate ongoing cashflow capacity from `monthly_savings` / `surplus`.
-- **Task D (Smart Planning Isolation)**: Confirmed Smart Goal Planning treats `total_savings` as background context and never auto-allocates accumulated savings to goal balances.
-- **Task E (Universal Ask Saarthi Handoff)**: Implemented standardized `initialPrompt` handoff across all 6 feature domains (Smart Planning, Scam Shield, Government Schemes, Financial Literacy, Recommendations, and Home Dashboard).
-- **Auto-Send & Duplicate Prevention**: Implemented `consumedPromptRef` in `frontend/app/(tabs)/saarthi.tsx` to automatically trigger chat queries upon navigation while preventing duplicate sends on component rerenders.
+- **Market Plus / Market Intelligence Audit**: Audited complete data flow across frontend (`market-intelligence.tsx`), backend service (`market_service.py`), and data providers (`market_data_provider.py`).
+- **Live Market Data Provider Implementation**: Upgraded `PublicMarketDataProvider` in `backend/app/providers/market_data_provider.py` to fetch real-time prices for NIFTY 50 (`^NSEI`), SENSEX (`^BSESN`), Gold ETF (`GOLDBEES.NS`), Silver ETF (`SILVERBEES.NS`), and USD/INR (`USDINR=X`) via HTTP GET requests.
+- **Failover Chain & Freshness Accuracy**: `MarketService` in `backend/app/services/market_service.py` delegates to `PublicMarketDataProvider` when `AlphaVantageMarketDataProvider` is missing API keys or hits rate limits. Sets `freshness = "LIVE"` when real-time data succeeds, and `freshness = "STALE"` when offline.
+- **Backend Logging**: Added structured logging for API request start, response HTTP status codes, parsed asset values, cache hits/misses, TTL age, and data source.
+- **Independent Audit Verification Script**: Created `backend/audit_market_api.py` (`100% VERIFIED`).
 - **Automated Verification**:
-  - Live E2E script: `python prompt8a_live_test.py` (`11/11 PASSED`).
+  - Live E2E script: `python audit_market_api.py` (`LIVE DATA VERIFIED`).
   - Full backend test suite: `pytest tests/` (`105/105 PASSED`).
   - Frontend TypeScript compiler: `npx tsc --noEmit` (`0 ERRORS`).
   - Expo configuration validation: (`SDK 52 VALID`).
 
 ## Work currently in progress
 
-None; Prompt 8A is fully implemented and verified.
+None; All Market Plus audit and live data fixes are fully implemented and verified.
 
 ## Verified working components
 
-- User Financial Profile: Age (18-120), Monthly Income, Monthly Expenses, Monthly Savings, Total Savings, Primary Goal, Risk Preference.
-- Financial Twin: Deterministic score (0-100), risk level, liquid emergency buffer months based on Total Savings.
-- Universal Ask Saarthi: One real AI Saarthi 24/7 chat screen with contextual prompt handoff and duplicate prevention across all modules.
-- Backend Pytest test suite: `105/105 PASSED`.
-- Live E2E test script: `python prompt8a_live_test.py` (`11/11 PASSED`).
+- User Financial Profile & Onboarding (Age 18-120, Monthly vs Total Savings).
+- Financial Twin Engine & Detailed View.
+- Universal AI Saarthi 24/7 Voice & Text Chat (with contextual prompt handoff and duplicate prevention).
+- Smart Goal Planning Engine.
+- Scam Shield Threat Detection Engine.
+- Financial Literacy Engine & Quiz Evaluation.
+- Government Scheme Support Engine.
+- Live Market Intelligence & Market Pulse Engine (Real-time prices, Market Pulse, 300s TTL cache).
+- Personalized Financial Recommendation Engine.
+- High-Performance Voice-First Experience & Accessibility Engine.
+- Full System Orchestration (Intelligence Dashboard & Today's Financial Brief).
+- Backend test suite: `105/105 PASSED`.
+- Live Market Audit script: `audit_market_api.py` (`VERIFIED`).
 - Frontend compilation: `npx tsc --noEmit` (`0 ERRORS`).
