@@ -1,4 +1,4 @@
-# Project State — Prompt 14 (Completed and Verified)
+# Project State — Prompt 8A (Completed and Verified)
 
 ## Identity and locked stack
 
@@ -24,10 +24,14 @@ Dhan Saarthi is an AI-powered financial companion centered on a Financial Twin. 
   - `UserFinancialIntelligenceService` (`backend/app/services/user_financial_intelligence_service.py`) for central snapshot aggregation (`GET /api/dashboard/snapshot`) and Today's Financial Brief (`GET /api/dashboard/brief`).
   - Deterministic `FinancialPriorityOrchestrator` (`backend/app/services/financial_priority_orchestrator.py`) evaluating top priority across an 8-level hierarchy (`SCAM_SAFETY`, `EMERGENCY_BUFFER`, `HIGH_COST_DEBT`, `GOAL_AT_RISK`/`GOAL_TIGHT`, `GOVERNMENT_SCHEME`, `FINANCIAL_LITERACY`, `WEALTH_BUILDING`, `MARKET_AWARENESS`) with deep-link action routes.
   - Master Context Orchestration in `ContextBuilder` with 13-tier bounded ordering and context budget caps (max 15,000 chars with graceful bottom-up trimming).
-  - Upgraded Home Dashboard (`frontend/app/(tabs)/index.tsx`) displaying Today's Top Financial Priority card (with deep links & Ask Saarthi link) and Today's Financial Brief card (with bullet points, Listen TTS button, and Ask Saarthi link).
-  - Backend diagnostic health endpoint (`GET /api/system/health`).
+- **Fix User Financial Profile & Universal Ask Saarthi Integration (Prompt 8A)**:
+  - DOB removed from active onboarding; Age (18-120) collected as sole age parameter.
+  - Profile separately stores `total_savings` (accumulated wealth) and `monthly_savings` (typical monthly savings).
+  - Financial Twin calculates liquid emergency buffer months from `total_savings / monthly_expenses` and evaluates ongoing cashflow from `monthly_savings`.
+  - Smart Goal Planning does NOT silently auto-transfer total savings into goal current amounts.
+  - Centralized Universal Ask Saarthi contextual handoff using `initialPrompt` across Smart Planning, Scam Shield, Government Schemes, Financial Literacy, Recommendations, and Home Dashboard with `consumedPromptRef` duplicate auto-send prevention.
 - **Automated & Live Verification**:
-  - Pytest test suite: `102/102 PASSED` (100%).
+  - Pytest test suite: `105/105 PASSED` (100%).
   - TypeScript compilation (`npx tsc --noEmit`): `0 errors`.
   - Expo configuration validation: `SDK 52 VALID`.
-  - Live System Orchestration E2E test (`prompt14_live_test.py`): `17/17 PASSED`.
+  - Live Prompt 8A E2E test (`prompt8a_live_test.py`): `11/11 PASSED`.

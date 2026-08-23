@@ -97,6 +97,8 @@ def _build_profile_response(profile: UserProfile) -> ProfileResponse:
     data["preferred_language"] = profile.user.preferred_language
     data["accessibility_mode"] = profile.user.accessibility_mode
     data["derived_age"] = derived_age
+    data["total_savings"] = getattr(profile, "total_savings", 0.0) or 0.0
+    data["monthly_savings"] = getattr(profile, "monthly_savings", 0.0) or getattr(profile, "savings", 0.0) or 0.0
     resp = ProfileResponse.model_validate(data)
     return resp
 
@@ -120,6 +122,18 @@ def upsert_profile(payload: ProfileUpsertRequest, user: User = Depends(get_curre
         "high_contrast_enabled", "reduce_motion_enabled", "simplified_interface_enabled",
         "voice_navigation_enabled", "auto_speak_important_results", "sequential_navigation_enabled",
     })
+    
+    # Financial savings sync
+    if payload.monthly_savings is not None and float(payload.monthly_savings) > 0:
+        values["monthly_savings"] = float(payload.monthly_savings)
+        values["savings"] = float(payload.monthly_savings)
+    elif payload.savings is not None and float(payload.savings) > 0:
+        values["monthly_savings"] = float(payload.savings)
+        values["savings"] = float(payload.savings)
+
+    if payload.total_savings is not None:
+        values["total_savings"] = float(payload.total_savings)
+
     profile = user.profile
     if profile is None:
         profile = UserProfile(user_id=user.id, **values)
@@ -143,6 +157,7 @@ def upsert_profile(payload: ProfileUpsertRequest, user: User = Depends(get_curre
     db.commit()
     db.refresh(profile)
     return _build_profile_response(profile)
+
 
 
 

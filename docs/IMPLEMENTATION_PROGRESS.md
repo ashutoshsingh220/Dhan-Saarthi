@@ -74,10 +74,19 @@
   - Backend diagnostic health endpoint (`GET /api/system/health`) reporting database, Gemini, market provider, cache, and voice availability without exposing secrets.
   - Pytest test suite (`102/102 passed`), TypeScript check (`0 errors`), Expo config validation (`SDK 52 valid`), and Live E2E test (`prompt14_live_test.py` `17/17 passed`).
 
+- Prompt 8A: Fix User Financial Profile & Universal Ask Saarthi Integration:
+  - DOB removed from active onboarding; Age (18-120) collected as sole age parameter.
+  - Extended `UserProfile` ORM model & schemas with `total_savings` (accumulated wealth) and `monthly_savings` (typical monthly savings).
+  - Calibrated `calculate_initial_twin` in `backend/app/services/twin.py` to evaluate liquid emergency buffer months from `total_savings / monthly_expenses` and ongoing cashflow capacity from `monthly_savings`.
+  - Guaranteed Smart Planning does NOT silently auto-transfer total savings into goal current amounts.
+  - Unified Universal Ask Saarthi handoff using `initialPrompt` search parameter across all 6 feature modules (`planning.tsx`, `scam-shield.tsx`, `schemes.tsx`, `learn-detail.tsx`, `recommendations.tsx`, `market-intelligence.tsx`, `index.tsx`).
+  - Added `consumedPromptRef` to `frontend/app/(tabs)/saarthi.tsx` for duplicate auto-send prevention on component rerenders.
+  - Pytest test suite (`105/105 passed`), TypeScript check (`0 errors`), Expo config validation (`SDK 52 valid`), and Live E2E test (`prompt8a_live_test.py` `11/11 passed`).
+
 ## IN PROGRESS
 
 - None.
 
 ## ALL PROMPTS COMPLETED
 
-- Prompts 1 through 14 are fully implemented, tested, and verified production-ready.
+- Prompts 1 through 14 + Prompt 8A are fully implemented, tested, and verified production-ready.

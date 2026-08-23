@@ -27,7 +27,8 @@ Prompts 1, 2, 3, 4, 5, 6, and 7 establish the contracts below. The backend uses 
 
 ### Profile
 - `GET /api/profile` — bearer-protected. Returns user profile or `404` before onboarding.
-- `PUT /api/profile` — bearer-protected. Upserts profile fields including `preferred_language` (`"English"` or `"Hindi"`).
+- `PUT /api/profile` — bearer-protected. Upserts profile fields including `age` (18-120), `monthly_income`, `monthly_expenses`, `monthly_savings`, `total_savings`, `financial_goal`, `risk_preference`, `preferred_language` (`"English"` or `"Hindi"`).
+
 
 ### Financial Twin
 - `GET /api/financial-twin` — bearer-protected. Returns saved prototype twin or `404`.

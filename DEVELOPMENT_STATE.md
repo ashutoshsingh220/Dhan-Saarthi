@@ -2,38 +2,31 @@
 
 ## Current phase
 
-**PROMPT 14 — FULL SYSTEM INTEGRATION, END-TO-END ORCHESTRATION & PRODUCTION READINESS (COMPLETED AND VERIFIED)**
+**PROMPT 8A — FIX USER FINANCIAL PROFILE + UNIVERSAL ASK SAARTHI INTEGRATION (COMPLETED AND VERIFIED)**
 
 ## Completed work
 
-- Implemented `FinancialPriorityOrchestrator` (`backend/app/services/financial_priority_orchestrator.py`) evaluating top priority across an 8-level deterministic priority hierarchy (`SCAM_SAFETY`, `EMERGENCY_BUFFER`, `HIGH_COST_DEBT`, `GOAL_AT_RISK`/`GOAL_TIGHT`, `GOVERNMENT_SCHEME`, `FINANCIAL_LITERACY`, `WEALTH_BUILDING`, `MARKET_AWARENESS`) with deep-link action routes.
-- Implemented `UserFinancialIntelligenceService` (`backend/app/services/user_financial_intelligence_service.py`) providing `get_user_intelligence_snapshot` (`GET /api/dashboard/snapshot`) and `generate_todays_financial_brief` (`GET /api/dashboard/brief`) with graceful fallback handling.
-- Refactored `ContextBuilder` (`backend/app/services/context_builder.py`) to enforce Master Context Orchestration (13-tier bounded hierarchy) and Context Budget Strategy (max 15,000 chars context budget cap with graceful trimming).
-- Upgraded Home Dashboard UI (`frontend/app/(tabs)/index.tsx`) into an Intelligence Dashboard presenting Today's Top Financial Priority card (with action deep link & Ask Saarthi link) and Today's Financial Brief card (with bullet points, Listen TTS button, and Ask Saarthi link).
-- Added API endpoints in `backend/app/api/routes.py` (`GET /api/dashboard/brief`, `GET /api/dashboard/snapshot`, `GET /api/system/health`).
-- Created frontend API methods in `frontend/services/api.ts` (`getTodaysBrief`, `getFinancialSnapshot`, `getSystemHealth`).
-- Created automated test suite `backend/tests/test_system_orchestration.py` (11/11 pass).
-- Created 17-step live E2E verification script `backend/prompt14_live_test.py` (17/17 pass).
-- Verified full backend test suite (`102/102 PASSED`), TypeScript compiler (`0 ERRORS`), Expo config validation (`SDK 52 VALID`).
+- **Task A (Age Only & DOB Removal)**: Removed Date of Birth from active onboarding flow. User onboarding and profile settings now collect and validate `Age` (numeric, 18-120). Database column `user_profiles.date_of_birth` remains for legacy compatibility, but age is stored directly in `user_profiles.age`.
+- **Task B (Total Savings vs. Monthly Savings)**: Extended `UserProfile` model and profile schemas with `total_savings` (accumulated wealth so far) and `monthly_savings` (typical monthly savings). Added `total_savings` and `monthly_savings` inputs to `onboarding.tsx` and `more.tsx`.
+- **Task C (Financial Twin Score Engine Calibration)**: Refactored `calculate_initial_twin` in `backend/app/services/twin.py` to calculate liquid emergency buffer months from `total_savings / monthly_expenses` and evaluate ongoing cashflow capacity from `monthly_savings` / `surplus`.
+- **Task D (Smart Planning Isolation)**: Confirmed Smart Goal Planning treats `total_savings` as background context and never auto-allocates accumulated savings to goal balances.
+- **Task E (Universal Ask Saarthi Handoff)**: Implemented standardized `initialPrompt` handoff across all 6 feature domains (Smart Planning, Scam Shield, Government Schemes, Financial Literacy, Recommendations, and Home Dashboard).
+- **Auto-Send & Duplicate Prevention**: Implemented `consumedPromptRef` in `frontend/app/(tabs)/saarthi.tsx` to automatically trigger chat queries upon navigation while preventing duplicate sends on component rerenders.
+- **Automated Verification**:
+  - Live E2E script: `python prompt8a_live_test.py` (`11/11 PASSED`).
+  - Full backend test suite: `pytest tests/` (`105/105 PASSED`).
+  - Frontend TypeScript compiler: `npx tsc --noEmit` (`0 ERRORS`).
+  - Expo configuration validation: (`SDK 52 VALID`).
 
 ## Work currently in progress
 
-None; Prompts 1 through 14 are fully implemented and verified.
+None; Prompt 8A is fully implemented and verified.
 
 ## Verified working components
 
-- Backend APIs: Auth, Profile, Financial Twin, AI Saarthi Chat, Smart Financial Planning, Scam Shield, Financial Literacy, Personalization Profile, Government Scheme Support, Live Market Intelligence (Alpha Vantage), Personalized Financial Recommendations, Accessibility Engine, Unified Intelligence Snapshot, Today's Financial Brief, Backend Health Diagnostics.
-- Priority Orchestration: 8-level deterministic priority evaluation across scam, buffer, debt, goals, schemes, literacy, wealth building, and market pulse.
-- Master AI Context Orchestration: 13-tier strict context budget hierarchy with automatic truncation.
-- Frontend Intelligence Dashboard: Today's Top Priority card, Today's Financial Brief card with TTS listen capability, Financial Twin breakdown, and capability domains.
-- Backend test suite: `pytest tests/` passed (102/102).
-- Live E2E script: `python prompt14_live_test.py` passed (17/17).
-- Frontend compilation: `npx tsc --noEmit` passed (0 errors).
-- Expo configuration: SDK 52 valid.
-
-
-
-
-
-
-
+- User Financial Profile: Age (18-120), Monthly Income, Monthly Expenses, Monthly Savings, Total Savings, Primary Goal, Risk Preference.
+- Financial Twin: Deterministic score (0-100), risk level, liquid emergency buffer months based on Total Savings.
+- Universal Ask Saarthi: One real AI Saarthi 24/7 chat screen with contextual prompt handoff and duplicate prevention across all modules.
+- Backend Pytest test suite: `105/105 PASSED`.
+- Live E2E test script: `python prompt8a_live_test.py` (`11/11 PASSED`).
+- Frontend compilation: `npx tsc --noEmit` (`0 ERRORS`).

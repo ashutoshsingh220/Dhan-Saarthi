@@ -37,7 +37,10 @@ class UserProfile(Base):
     monthly_income: Mapped[float] = mapped_column(Numeric(14, 2))
     monthly_expenses: Mapped[float] = mapped_column(Numeric(14, 2))
     savings: Mapped[float] = mapped_column(Numeric(14, 2))
+    total_savings: Mapped[float | None] = mapped_column(Numeric(14, 2), nullable=True, default=0.0)
+    monthly_savings: Mapped[float | None] = mapped_column(Numeric(14, 2), nullable=True, default=0.0)
     financial_goal: Mapped[str] = mapped_column(String(255))
+
     risk_preference: Mapped[str] = mapped_column(String(30))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

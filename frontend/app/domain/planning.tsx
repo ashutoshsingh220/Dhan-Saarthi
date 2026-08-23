@@ -145,8 +145,16 @@ export default function SmartPlanningScreen() {
 
   const handleAskSaarthi = () => {
     if (!selectedGoal) return;
-    router.push("/(tabs)/saarthi");
+    const planInfo = selectedGoal.plan;
+    const reqText = planInfo ? `₹${planInfo.monthly_required.toLocaleString("en-IN")}/month` : "N/A";
+    const feasText = planInfo ? planInfo.feasibility_status : "N/A";
+    const promptMessage = `I want to understand my financial goal plan for '${selectedGoal.name}' (${selectedGoal.category}) better. Target: ₹${selectedGoal.target_amount.toLocaleString("en-IN")}, Current: ₹${selectedGoal.current_amount.toLocaleString("en-IN")}, Target Date: ${selectedGoal.target_date}. Monthly required: ${reqText}, Feasibility status: ${feasText}. Please explain my plan, why it has this feasibility status, and what I can realistically do to improve it based on my stored profile numbers without altering any calculations.`;
+    router.push({
+      pathname: "/(tabs)/saarthi",
+      params: { initialPrompt: promptMessage },
+    });
   };
+
 
   const renderFeasibilityBadge = (status?: string) => {
     if (status === "FEASIBLE") {

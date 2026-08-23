@@ -73,9 +73,12 @@ class ContextBuilder:
         if profile:
             income = float(profile.monthly_income)
             expenses = float(profile.monthly_expenses)
-            savings = float(profile.savings)
+            monthly_savings = float(getattr(profile, "monthly_savings", None) or profile.savings or 0.0)
+            total_savings = float(getattr(profile, "total_savings", None) or 0.0)
+            if total_savings == 0.0 and float(profile.savings or 0.0) > 0:
+                total_savings = float(profile.savings)
             surplus = income - expenses
-            buffer_months = (savings / expenses) if expenses > 0 else 0.0
+            buffer_months = (total_savings / expenses) if expenses > 0 else 0.0
 
             lines.extend([
                 "=== FINANCIAL PROFILE ===",
@@ -85,12 +88,14 @@ class ContextBuilder:
                 f"Monthly Income: ₹{income:,.2f}",
                 f"Monthly Expenses: ₹{expenses:,.2f}",
                 f"Monthly Surplus: ₹{surplus:,.2f}",
-                f"Savings Buffer: ₹{savings:,.2f} (approx. {buffer_months:.1f} months of expenses)",
+                f"Monthly Savings: ₹{monthly_savings:,.2f}",
+                f"Total Accumulated Savings: ₹{total_savings:,.2f} (approx. {buffer_months:.1f} months liquid emergency buffer)",
                 f"Primary Goal: {profile.financial_goal}",
                 f"Stated Risk Preference: {profile.risk_preference}",
             ])
         else:
             lines.append("Profile Status: Incomplete")
+
 
         if twin:
             lines.extend([

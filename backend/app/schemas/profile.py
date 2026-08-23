@@ -20,17 +20,20 @@ _TODAY = date.today  # callable so tests can monkey-patch if needed
 
 class ProfileUpsertRequest(BaseModel):
     # --- existing fields ---
-    age: int = Field(ge=0, le=120)
+    age: int = Field(ge=1, le=120)
     gender: str | None = Field(default=None, max_length=50)
     occupation: str = Field(min_length=2, max_length=120)
     city: str | None = Field(default=None, max_length=120)
     monthly_income: Decimal = Field(ge=0)
     monthly_expenses: Decimal = Field(ge=0)
-    savings: Decimal = Field(ge=0)
+    savings: Decimal = Field(default=Decimal(0), ge=0)
+    total_savings: Optional[Decimal] = Field(default=Decimal(0), ge=0)
+    monthly_savings: Optional[Decimal] = Field(default=Decimal(0), ge=0)
     financial_goal: str = Field(min_length=2, max_length=255)
     risk_preference: str = Field(pattern="^(low|moderate|high)$")
     preferred_language: str = Field(default="English", max_length=30)
     accessibility_mode: str = Field(default="standard", pattern="^(standard|voice_first)$")
+
 
     # --- PROMPT 8: personalization fields (all optional for backward compatibility) ---
     date_of_birth: Optional[date] = Field(default=None)
@@ -119,7 +122,10 @@ class ProfileResponse(BaseModel):
     monthly_income: Decimal
     monthly_expenses: Decimal
     savings: Decimal
+    total_savings: Optional[Decimal] = Decimal(0)
+    monthly_savings: Optional[Decimal] = Decimal(0)
     financial_goal: str
+
     risk_preference: str
     preferred_language: str
     accessibility_mode: str

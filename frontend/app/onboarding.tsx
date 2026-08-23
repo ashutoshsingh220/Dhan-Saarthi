@@ -62,6 +62,8 @@ const initial = {
   city: "",
   monthly_income: "",
   monthly_expenses: "",
+  monthly_savings: "",
+  total_savings: "",
   savings: "",
   financial_goal: "",
   risk_preference: "moderate" as "low" | "moderate" | "high",
@@ -70,7 +72,6 @@ const initial = {
 };
 
 const initialPersonalization = {
-  date_of_birth: "",
   education_level: null as EducationLevel | null,
   financial_knowledge_level: null as FinancialKnowledgeLevel | null,
   preferred_explanation_level: null as ExplanationLevel | null,
@@ -97,10 +98,15 @@ export default function Onboarding() {
   };
 
   const review = () => {
-    if (!form.age || !form.occupation || !form.monthly_income || !form.monthly_expenses || !form.savings || !form.financial_goal)
-      return setError("Please complete the required financial profile fields.");
+    const ageNum = Number(form.age);
+    if (!form.age || isNaN(ageNum) || ageNum < 18 || ageNum > 120) {
+      return setError("Please enter a valid age between 18 and 120.");
+    }
+    if (!form.occupation || !form.monthly_income || !form.monthly_expenses || !form.financial_goal) {
+      return setError("Please complete all required financial profile fields.");
+    }
     setError(undefined);
-    setStep(3); // → Date of birth step
+    setStep(3); // → Education level step
   };
 
   const generate = async () => {
@@ -108,16 +114,20 @@ export default function Onboarding() {
     setBusy(true);
     setError(undefined);
     try {
+      const mSavings = form.monthly_savings ? Number(form.monthly_savings) : Number(form.savings || 0);
+      const tSavings = form.total_savings ? Number(form.total_savings) : mSavings;
+
       const payload: ProfilePayload = {
         ...form,
         age: Number(form.age),
         monthly_income: Number(form.monthly_income),
         monthly_expenses: Number(form.monthly_expenses),
-        savings: Number(form.savings),
+        monthly_savings: mSavings,
+        total_savings: tSavings,
+        savings: mSavings,
         gender: form.gender || undefined,
         city: form.city || undefined,
-        // personalization fields
-        date_of_birth: personalization.date_of_birth || null,
+        date_of_birth: null,
         education_level: personalization.education_level || null,
         financial_knowledge_level: personalization.financial_knowledge_level || null,
         preferred_explanation_level: personalization.preferred_explanation_level || null,
@@ -132,6 +142,7 @@ export default function Onboarding() {
       setBusy(false);
     }
   };
+
 
   // Step 0: Accessibility
   if (step === 0)
@@ -161,13 +172,14 @@ export default function Onboarding() {
       <Screen>
         <Title text="Your financial profile" sub="This information creates your initial Financial Twin." />
         <ErrorText text={error} />
-        <Field label="Age" value={form.age} onChangeText={(v) => patch("age", v)} keyboardType="numeric" />
+        <Field label="Age" value={form.age} onChangeText={(v) => patch("age", v)} keyboardType="numeric" placeholder="e.g. 25" />
         <Field label="Gender (optional)" value={form.gender} onChangeText={(v) => patch("gender", v)} />
         <Field label="Occupation" value={form.occupation} onChangeText={(v) => patch("occupation", v)} />
         <Field label="City (optional)" value={form.city} onChangeText={(v) => patch("city", v)} />
         <Field label="Monthly income (₹)" value={form.monthly_income} onChangeText={(v) => patch("monthly_income", v)} keyboardType="numeric" />
         <Field label="Monthly expenses (₹)" value={form.monthly_expenses} onChangeText={(v) => patch("monthly_expenses", v)} keyboardType="numeric" />
-        <Field label="Current savings (₹)" value={form.savings} onChangeText={(v) => patch("savings", v)} keyboardType="numeric" />
+        <Field label="Monthly savings (₹)" value={form.monthly_savings} onChangeText={(v) => { patch("monthly_savings", v); patch("savings", v); }} keyboardType="numeric" placeholder="e.g. 25000" />
+        <Field label="Total accumulated savings (₹)" value={form.total_savings} onChangeText={(v) => patch("total_savings", v)} keyboardType="numeric" placeholder="e.g. 300000" />
         <Field label="Primary financial goal" value={form.financial_goal} onChangeText={(v) => patch("financial_goal", v)} placeholder="e.g. Buy a home" />
         <Text style={styles.label}>Risk preference</Text>
         <View style={styles.grid}>
@@ -179,31 +191,8 @@ export default function Onboarding() {
       </Screen>
     );
 
-  // Step 3: Date of birth
+  // Step 3: Education level
   if (step === 3)
-    return (
-      <Screen>
-        <Title text={t("onboarding.personalization_title")} sub={t("onboarding.personalization_sub")} />
-        <Text style={styles.label}>{t("personalization.dob_label")}</Text>
-        <TextInput
-          style={styles.textInput}
-          value={personalization.date_of_birth}
-          onChangeText={(v) => patchP("date_of_birth", v)}
-          placeholder={t("personalization.dob_placeholder")}
-          keyboardType="numeric"
-          accessibilityLabel={t("personalization.dob_label")}
-          accessibilityHint="Enter your date of birth in YYYY-MM-DD format"
-          accessibilityRole="none"
-          accessible
-        />
-        <ErrorText text={error} />
-        <Button title="Continue" onPress={() => { setError(undefined); setStep(4); }} />
-        <Button title={t("onboarding.skip")} onPress={() => { patchP("date_of_birth", ""); setStep(4); }} />
-      </Screen>
-    );
-
-  // Step 4: Education level
-  if (step === 4)
     return (
       <Screen>
         <Title text={t("personalization.education_label")} sub={t("personalization.optional_note")} />
@@ -219,13 +208,13 @@ export default function Onboarding() {
             />
           ))}
         </ScrollView>
-        <Button title="Continue" onPress={() => setStep(5)} />
-        <Button title={t("onboarding.skip")} onPress={() => { patchP("education_level", null); setStep(5); }} />
+        <Button title="Continue" onPress={() => setStep(4)} />
+        <Button title={t("onboarding.skip")} onPress={() => { patchP("education_level", null); setStep(4); }} />
       </Screen>
     );
 
-  // Step 5: Financial knowledge
-  if (step === 5)
+  // Step 4: Financial knowledge
+  if (step === 4)
     return (
       <Screen>
         <Title text={t("personalization.knowledge_label")} sub={t("personalization.optional_note")} />
@@ -239,13 +228,13 @@ export default function Onboarding() {
             accessibilityLabel={`${t(opt.labelKey)}: ${t(opt.descKey)}`}
           />
         ))}
-        <Button title="Continue" onPress={() => setStep(6)} />
-        <Button title={t("onboarding.skip")} onPress={() => { patchP("financial_knowledge_level", null); setStep(6); }} />
+        <Button title="Continue" onPress={() => setStep(5)} />
+        <Button title={t("onboarding.skip")} onPress={() => { patchP("financial_knowledge_level", null); setStep(5); }} />
       </Screen>
     );
 
-  // Step 6: Explanation level
-  if (step === 6)
+  // Step 5: Explanation level
+  if (step === 5)
     return (
       <Screen>
         <Title text={t("personalization.explanation_label")} sub={t("personalization.optional_note")} />
@@ -259,13 +248,13 @@ export default function Onboarding() {
             accessibilityLabel={`${t(opt.labelKey)}: ${t(opt.descKey)}`}
           />
         ))}
-        <Button title="Continue" onPress={() => setStep(7)} />
-        <Button title={t("onboarding.skip")} onPress={() => { patchP("preferred_explanation_level", null); setStep(7); }} />
+        <Button title="Continue" onPress={() => setStep(6)} />
+        <Button title={t("onboarding.skip")} onPress={() => { patchP("preferred_explanation_level", null); setStep(6); }} />
       </Screen>
     );
 
-  // Step 7: Occupation
-  if (step === 7)
+  // Step 6: Occupation
+  if (step === 6)
     return (
       <Screen>
         <Title text={t("personalization.occupation_label")} sub={t("personalization.optional_note")} />
@@ -281,12 +270,12 @@ export default function Onboarding() {
             />
           ))}
         </ScrollView>
-        <Button title="Continue" onPress={() => setStep(8)} />
-        <Button title={t("onboarding.skip")} onPress={() => { patchP("occupation_status", null); setStep(8); }} />
+        <Button title="Continue" onPress={() => setStep(7)} />
+        <Button title={t("onboarding.skip")} onPress={() => { patchP("occupation_status", null); setStep(7); }} />
       </Screen>
     );
 
-  // Step 8: Review and submit
+  // Step 7: Review and submit
   return (
     <Screen>
       <Title text="Review your financial view" sub="Check the information before we build your Financial Twin." />
@@ -297,12 +286,7 @@ export default function Onboarding() {
             <Text style={styles.value}>{value || "—"}</Text>
           </View>
         ))}
-        {personalization.date_of_birth ? (
-          <View style={styles.row}>
-            <Text style={styles.key}>date of birth</Text>
-            <Text style={styles.value}>{personalization.date_of_birth}</Text>
-          </View>
-        ) : null}
+
         {personalization.education_level ? (
           <View style={styles.row}>
             <Text style={styles.key}>education</Text>

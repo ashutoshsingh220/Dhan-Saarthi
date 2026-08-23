@@ -69,12 +69,12 @@ export default function MarketIntelligenceScreen() {
     const query = assetSymbol
       ? `Explain today's movement for ${assetSymbol} and what a beginner should understand about it.`
       : "Explain today's Indian market trends and market pulse to me simply.";
-    const pathName = "/(" + "tabs)/saarthi";
     router.push({
-      pathname: pathName as any,
-      params: { initialQuery: query },
+      pathname: "/(tabs)/saarthi" as any,
+      params: { initialPrompt: query },
     });
   };
+
 
   const getDirectionColor = (dir: string) => {
     if (dir === "UP") return "#16a34a";

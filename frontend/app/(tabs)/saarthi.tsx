@@ -114,12 +114,16 @@ export default function SaarthiTab() {
     };
   }, [token]);
 
+  const consumedPromptRef = useRef<string | null>(null);
+
   // Handle initialPrompt parameter passed from other domain screens
   useEffect(() => {
-    if (params.initialPrompt && !loading) {
+    if (params.initialPrompt && !loading && consumedPromptRef.current !== params.initialPrompt) {
+      consumedPromptRef.current = params.initialPrompt;
       handleSendMessage(params.initialPrompt);
     }
-  }, [params.initialPrompt]);
+  }, [params.initialPrompt, loading]);
+
 
   // Speech Recognition Control
   const startVoiceInput = () => {

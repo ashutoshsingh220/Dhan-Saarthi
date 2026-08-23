@@ -1,4 +1,4 @@
-﻿import os
+import os
 
 os.environ["DATABASE_URL"] = "sqlite:///./test_dhan_saarthi.db"
 os.environ["JWT_SECRET_KEY"] = "test-secret"
@@ -225,3 +225,30 @@ def test_prefer_not_to_say_accepted():
     data = res.json()
     assert data["education_level"] == "PREFER_NOT_TO_SAY"
     assert data["occupation_status"] == "PREFER_NOT_TO_SAY"
+
+
+def test_prompt8a_separate_total_and_monthly_savings():
+    """Verify Age, Total Savings, and Monthly Savings persist separately."""
+    token = _register_and_onboard("savings_test@p8.com", {
+        "monthly_savings": 25000,
+        "total_savings": 300000,
+    })
+    res = client.get("/api/profile", headers={"Authorization": f"Bearer {token}"})
+    assert res.status_code == 200
+    data = res.json()
+    assert float(data["monthly_savings"]) == 25000
+    assert float(data["total_savings"]) == 300000
+    assert data["age"] == 30
+
+
+
+def test_prompt8a_invalid_age_rejected():
+    """Verify age boundaries (1-120)."""
+    token = _register_and_onboard("age_boundary@p8.com")
+    res = client.put("/api/profile", headers={"Authorization": f"Bearer {token}"}, json={
+        "age": 150, "occupation": "Engineer", "monthly_income": 50000,
+        "monthly_expenses": 25000, "savings": 100000, "financial_goal": "Save",
+        "risk_preference": "low", "preferred_language": "English", "accessibility_mode": "standard",
+    })
+    assert res.status_code == 422
+

@@ -70,12 +70,13 @@ export default function ScamShieldScreen() {
 
 
   const askSaarthiAboutScan = (scan: ScamScan) => {
-    const promptMessage = `Can you explain why this message was flagged as ${scan.risk_level} risk (${scan.risk_score}/100)? Message: "${scan.input_text}"`;
+    const promptMessage = `Please explain this Scam Shield result in simple language. Why was this message assigned a risk score of ${scan.risk_score}/100 (${scan.risk_level})? Message: "${scan.input_text}". Explain the detected indicators and tell me what safe action I should take without changing the deterministic scam score.`;
     router.push({
       pathname: "/(tabs)/saarthi",
       params: { initialPrompt: promptMessage },
     });
   };
+
 
   const getRiskColor = (level: string) => {
     switch (level) {

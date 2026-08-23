@@ -57,12 +57,12 @@ export default function RecommendationsScreen() {
 
   const handleAskSaarthi = () => {
     const query = "Explain my top financial priority and monthly surplus allocation guidance to me in simple terms.";
-    const pathName = "/(" + "tabs)/saarthi";
     router.push({
-      pathname: pathName as any,
-      params: { initialQuery: query },
+      pathname: "/(tabs)/saarthi" as any,
+      params: { initialPrompt: query },
     });
   };
+
 
   const getCompletenessStyle = (status: string) => {
     switch (status) {

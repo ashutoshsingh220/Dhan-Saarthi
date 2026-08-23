@@ -105,13 +105,15 @@ export default function SchemesScreen() {
 
   const handleAskSaarthi = (scheme: GovernmentScheme) => {
     setSelectedScheme(null);
+    const promptMessage = `Please explain the selected government scheme '${scheme.name}' (${scheme.short_name}) in simple language. Tell me why it may be relevant to my profile, what benefits it provides, the main eligibility criteria, important requirements, and what I should verify before applying.`;
     router.push({
       pathname: "/(tabs)/saarthi" as any,
       params: {
-        initialQuery: `Explain the government scheme '${scheme.name}' (${scheme.short_name}) to me in simple language. Tell me why it may be relevant to my situation and what I should verify next.`,
+        initialPrompt: promptMessage,
       },
     });
   };
+
 
   const openOfficialUrl = (url: string) => {
     if (url) {

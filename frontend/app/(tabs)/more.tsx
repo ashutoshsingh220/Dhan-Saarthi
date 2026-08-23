@@ -35,7 +35,9 @@ export default function MoreTab() {
   // --- PROMPT 8: Personalization state ---
 
   const [profile, setProfile] = useState<ProfileResponse | null>(null);
-  const [personDOB, setPersonDOB] = useState("");
+  const [personAge, setPersonAge] = useState("");
+  const [personMonthlySavings, setPersonMonthlySavings] = useState("");
+  const [personTotalSavings, setPersonTotalSavings] = useState("");
   const [personEdu, setPersonEdu] = useState<EducationLevel | null>(null);
   const [personKnowledge, setPersonKnowledge] = useState<FinancialKnowledgeLevel | null>(null);
   const [personExplain, setPersonExplain] = useState<ExplanationLevel | null>(null);
@@ -48,7 +50,9 @@ export default function MoreTab() {
     if (token) {
       api.getProfile(token).then((p) => {
         setProfile(p);
-        setPersonDOB(p.date_of_birth || "");
+        setPersonAge(p.age?.toString() || "");
+        setPersonMonthlySavings(p.monthly_savings?.toString() || p.savings?.toString() || "");
+        setPersonTotalSavings(p.total_savings?.toString() || "");
         setPersonEdu(p.education_level || null);
         setPersonKnowledge(p.financial_knowledge_level || null);
         setPersonExplain(p.preferred_explanation_level || null);
@@ -63,13 +67,20 @@ export default function MoreTab() {
     setPersonSaved(false);
     setPersonError(null);
     try {
+      const ageNum = personAge ? Number(personAge) : profile.age;
+      const mSavings = personMonthlySavings ? Number(personMonthlySavings) : Number(profile.monthly_savings || profile.savings || 0);
+      const tSavings = personTotalSavings ? Number(personTotalSavings) : Number(profile.total_savings || 0);
+
       const updated = await api.saveProfile(
         {
           ...profile,
+          age: ageNum,
           monthly_income: Number(profile.monthly_income),
           monthly_expenses: Number(profile.monthly_expenses),
-          savings: Number(profile.savings),
-          date_of_birth: personDOB || null,
+          monthly_savings: mSavings,
+          total_savings: tSavings,
+          savings: mSavings,
+          date_of_birth: null,
           education_level: personEdu,
           financial_knowledge_level: personKnowledge,
           preferred_explanation_level: personExplain,
@@ -85,6 +96,7 @@ export default function MoreTab() {
       setPersonSaving(false);
     }
   };
+
 
   const handleSignOut = async () => {
     await signOut();
@@ -338,18 +350,42 @@ export default function MoreTab() {
             <Text style={styles.cardTitle}>🎯 {t("personalization.title")}</Text>
             <Text style={styles.cardSubtitle}>{t("personalization.subtitle")}</Text>
 
-            {/* Date of Birth */}
-            <Text style={styles.fieldLabel}>{t("personalization.dob_label")}</Text>
+            {/* Age */}
+            <Text style={styles.fieldLabel}>Age</Text>
             <TextInput
               style={styles.textInput}
-              value={personDOB}
-              onChangeText={setPersonDOB}
-              placeholder={t("personalization.dob_placeholder")}
+              value={personAge}
+              onChangeText={setPersonAge}
+              placeholder="e.g. 25"
               keyboardType="numeric"
-              accessibilityLabel={t("personalization.dob_label")}
-              accessibilityHint="Enter your date of birth in YYYY-MM-DD format"
+              accessibilityLabel="Age"
               accessible
             />
+
+            {/* Monthly Savings */}
+            <Text style={styles.fieldLabel}>Monthly Savings (₹)</Text>
+            <TextInput
+              style={styles.textInput}
+              value={personMonthlySavings}
+              onChangeText={setPersonMonthlySavings}
+              placeholder="e.g. 25000"
+              keyboardType="numeric"
+              accessibilityLabel="Monthly Savings"
+              accessible
+            />
+
+            {/* Total Savings */}
+            <Text style={styles.fieldLabel}>Total Accumulated Savings (₹)</Text>
+            <TextInput
+              style={styles.textInput}
+              value={personTotalSavings}
+              onChangeText={setPersonTotalSavings}
+              placeholder="e.g. 300000"
+              keyboardType="numeric"
+              accessibilityLabel="Total Accumulated Savings"
+              accessible
+            />
+
 
             {/* Education Level */}
             <Text style={styles.fieldLabel}>{t("personalization.education_label")}</Text>

@@ -46,10 +46,13 @@ export type ProfilePayload = {
   monthly_income: number;
   monthly_expenses: number;
   savings: number;
+  total_savings?: number;
+  monthly_savings?: number;
   financial_goal: string;
   risk_preference: "low" | "moderate" | "high";
   preferred_language: string;
   accessibility_mode: "standard" | "voice_first";
+
   // PROMPT 8 personalization fields (all optional)
   date_of_birth?: string | null;
   education_level?: EducationLevel | null;
