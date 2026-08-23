@@ -20,13 +20,6 @@
 
 ---
 
-## 👤 Author & Project Details
-
-**Author**: **[Ashutosh Singh](https://github.com/ashutoshsingh220)**  
-**Repository**: [github.com/ashutoshsingh220/Dhan-Saarthi](https://github.com/ashutoshsingh220/Dhan-Saarthi)  
-
-
----
 
 ## 🌟 Executive Overview
 
