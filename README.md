@@ -20,12 +20,11 @@
 
 ---
 
-## 👤 Author & Project Ownership
+## 👤 Author & Project Details
 
-**Developed & Maintained by**: **[Ashutosh Singh](https://github.com/ashutoshsingh220)**  
+**Author**: **[Ashutosh Singh](https://github.com/ashutoshsingh220)**  
 **Repository**: [github.com/ashutoshsingh220/Dhan-Saarthi](https://github.com/ashutoshsingh220/Dhan-Saarthi)  
 
-> 🔒 **Ownership & Copyright Notice**: Copyright © 2026 Ashutosh Singh. All rights reserved. This project, including all architectural designs, algorithms, codebases, and documentation, is owned exclusively by Ashutosh Singh.
 
 ---
 
@@ -219,7 +218,7 @@ npx expo start
 
 ---
 
-## 📄 License & Ownership
+## 👤 Author
 
-Copyright © 2026 **Ashutosh Singh**. All Rights Reserved.  
 Created and developed by **Ashutosh Singh** ([@ashutoshsingh220](https://github.com/ashutoshsingh220)).
+
