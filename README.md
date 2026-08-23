@@ -210,8 +210,3 @@ npx expo start
 *Scan QR code via Expo Go App or press `w` to run on Web.*
 
 ---
-
-## 👤 Author
-
-Created and developed by **Ashutosh Singh** ([@ashutoshsingh220](https://github.com/ashutoshsingh220)).
-
