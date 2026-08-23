@@ -46,21 +46,24 @@ class MarketService:
             age_seconds = (now - _CACHE["fetched_at"]).total_seconds()
             if age_seconds < MARKET_CACHE_TTL_SECONDS:
                 cache_valid = True
+                logger.info(f"Serving market data from IN_MEMORY_CACHE (TTL: {MARKET_CACHE_TTL_SECONDS}s, age: {age_seconds:.1f}s, source: {_CACHE['source']}, freshness: {_CACHE['freshness']}, fetched_at: {_CACHE['fetched_at'].isoformat()})")
 
         if not cache_valid:
-            # Primary Provider: Alpha Vantage Free API
+            logger.info(f"Cache miss or force_refresh requested (force_refresh={force_refresh}). Fetching fresh market data snapshot...")
             provider = AlphaVantageMarketDataProvider()
             raw_assets, source_name, is_live = provider.fetch_market_snapshot()
+
+            if not is_live:
+                logger.info("Alpha Vantage provider returned fallback snapshot. Attempting PublicMarketDataProvider for live public market data...")
+                public_provider = PublicMarketDataProvider()
+                raw_assets, source_name, is_live = public_provider.fetch_market_snapshot()
 
             if is_live:
                 freshness: FreshnessType = "LIVE"
             else:
-                # Check DB for recent snapshot before falling back
-                freshness: FreshnessType = "CACHED"
+                freshness: FreshnessType = "STALE"
 
 
-
-            # Transform raw dict into MarketAssetSchema list
             assets_list = []
             now_str = now.isoformat()
             for key, item in raw_assets.items():
@@ -79,10 +82,9 @@ class MarketService:
                 )
                 assets_list.append(asset_obj)
 
-            # Evaluate Market Pulse & Summary
             pulse, pulse_summary = MarketInsightService.calculate_market_pulse(assets_list)
+            logger.info(f"Market snapshot evaluated: source={source_name}, is_live={is_live}, freshness={freshness}, pulse={pulse}, fetched_at={now_str}")
 
-            # Persist to database if live or if table is empty
             try:
                 assets_json_str = json.dumps([a.model_dump() for a in assets_list])
                 snapshot = MarketSnapshot(
@@ -108,6 +110,7 @@ class MarketService:
             _CACHE["fetched_at"] = now
             _CACHE["freshness"] = freshness
             _CACHE["source"] = source_name
+
 
         explanation_level = "SIMPLE"
         if user and user.profile:
