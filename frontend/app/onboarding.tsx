@@ -69,6 +69,7 @@ const initial = {
   risk_preference: "moderate" as "low" | "moderate" | "high",
   preferred_language: "English",
   accessibility_mode: "standard" as "standard" | "voice_first",
+  consent_given: false,
 };
 
 const initialPersonalization = {
@@ -87,15 +88,22 @@ export default function Onboarding() {
   const { token, setTwin } = useAuth();
   const { t } = useLanguage();
 
-  const patch = (key: keyof typeof form, value: string) => setForm((prev) => ({ ...prev, [key]: value }));
+  const patch = (key: keyof typeof form, value: any) => setForm((prev) => ({ ...prev, [key]: value }));
   const patchP = <K extends keyof typeof initialPersonalization>(key: K, value: (typeof initialPersonalization)[K]) =>
     setPersonalization((prev) => ({ ...prev, [key]: value }));
 
-
-  const toProfile = () => {
+  const toConsent = () => {
     if (!form.preferred_language) return setError("Choose a language.");
     setError(undefined);
     setStep(2);
+  };
+
+  const toProfile = () => {
+    if (!form.consent_given) {
+      return setError("You must review and accept the legal consent terms to proceed.");
+    }
+    setError(undefined);
+    setStep(3);
   };
 
   const review = () => {
@@ -107,11 +115,14 @@ export default function Onboarding() {
       return setError("Please complete all required financial profile fields.");
     }
     setError(undefined);
-    setStep(3); // → Education level step
+    setStep(4); // → Education level step
   };
 
   const generate = async () => {
     if (!token) return;
+    if (!form.consent_given) {
+      return setError("Consent is mandatory to generate your Financial Twin.");
+    }
     setBusy(true);
     setError(undefined);
     try {
@@ -126,6 +137,8 @@ export default function Onboarding() {
         monthly_savings: mSavings,
         total_savings: tSavings,
         savings: mSavings,
+        consent_given: form.consent_given,
+        consent_given_at: new Date().toISOString(),
         gender: form.gender || undefined,
         city: form.city || undefined,
         date_of_birth: null,
@@ -163,12 +176,68 @@ export default function Onboarding() {
         <Title text="Choose your language" sub="We will use this preference for clearer guidance later." />
         <View style={styles.grid}>{languages.map((language) => <Choice key={language} label={language} selected={form.preferred_language === language} onPress={() => patch("preferred_language", language)} />)}</View>
         <ErrorText text={error} />
-        <Button title="Continue" onPress={toProfile} />
+        <Button title="Continue" onPress={toConsent} />
       </Screen>
     );
 
-  // Step 2: Financial profile
+  // Step 2: Legal Data Privacy & Consent Form (Mandatory before collecting details)
   if (step === 2)
+    return (
+      <Screen>
+        <Title text="Data Privacy & Legal Consent" sub="Please review our data handling policy before entering your personal details." />
+        <ErrorText text={error} />
+        
+        <ScrollView style={styles.consentBox} nestedScrollEnabled showsVerticalScrollIndicator>
+          <Text style={styles.consentSectionTitle}>1. Purpose of Data Collection</Text>
+          <Text style={styles.consentText}>
+            Dhan Saarthi collects your financial details (income, expenses, savings, goals, age) strictly to construct your personal Financial Twin, evaluate goal feasibility, and provide personalized financial awareness.
+          </Text>
+
+          <Text style={styles.consentSectionTitle}>2. Educational Companion Disclaimer</Text>
+          <Text style={styles.consentText}>
+            Dhan Saarthi is an educational financial companion and advisor simulator. It is not a licensed stockbroker, bank, or trade execution service, and does not guarantee financial returns.
+          </Text>
+
+          <Text style={styles.consentSectionTitle}>3. Account Deletion & 6-Month Data Erasure Policy</Text>
+          <Text style={styles.consentText}>
+            If you request account deletion, all your personal profile records, financial twin data, and AI conversation history will be permanently erased after a maximum 6-month security audit and compliance logging period.
+          </Text>
+
+          <Text style={styles.consentSectionTitle}>4. Voluntary Submission & Accuracy</Text>
+          <Text style={styles.consentText}>
+            By proceeding, you confirm that you are voluntarily providing your financial details for awareness calculations and that you accept full responsibility for the data entered.
+          </Text>
+        </ScrollView>
+
+        <Pressable
+          style={styles.checkboxRow}
+          onPress={() => {
+            const nextVal = !form.consent_given;
+            patch("consent_given", nextVal);
+            if (nextVal) setError(undefined);
+          }}
+          accessibilityRole="checkbox"
+          accessibilityState={{ checked: form.consent_given }}
+          accessibilityLabel="I have read and agree to the Data Privacy & Legal Consent terms."
+        >
+          <View style={[styles.checkbox, form.consent_given && styles.checkboxChecked]}>
+            {form.consent_given && <Text style={styles.checkboxCheckmark}>✓</Text>}
+          </View>
+          <Text style={styles.checkboxLabel}>
+            I have read, understood, and agree to the Data Privacy & Legal Consent terms.
+          </Text>
+        </Pressable>
+
+        <Button
+          title="Accept & Continue"
+          onPress={toProfile}
+          disabled={!form.consent_given}
+        />
+      </Screen>
+    );
+
+  // Step 3: Financial profile
+  if (step === 3)
     return (
       <Screen>
         <Title text="Your financial profile" sub="This information creates your initial Financial Twin." />
@@ -180,7 +249,6 @@ export default function Onboarding() {
         <Field label="Monthly income (₹)" value={form.monthly_income} onChangeText={(v) => patch("monthly_income", v)} keyboardType="numeric" />
         <Field label="Monthly expenses (₹)" value={form.monthly_expenses} onChangeText={(v) => patch("monthly_expenses", v)} keyboardType="numeric" />
         <Field label="Monthly savings (₹)" value={form.monthly_savings} onChangeText={(v) => patch("monthly_savings", v)} keyboardType="numeric" placeholder="e.g. 25000" />
-
         <Field label="Total accumulated savings (₹)" value={form.total_savings} onChangeText={(v) => patch("total_savings", v)} keyboardType="numeric" placeholder="e.g. 300000" />
         <Field label="Primary financial goal" value={form.financial_goal} onChangeText={(v) => patch("financial_goal", v)} placeholder="e.g. Buy a home" />
         <Text style={styles.label}>Risk preference</Text>
@@ -193,8 +261,8 @@ export default function Onboarding() {
       </Screen>
     );
 
-  // Step 3: Education level
-  if (step === 3)
+  // Step 4: Education level
+  if (step === 4)
     return (
       <Screen>
         <Title text={t("personalization.education_label")} sub={t("personalization.optional_note")} />
@@ -210,13 +278,13 @@ export default function Onboarding() {
             />
           ))}
         </ScrollView>
-        <Button title="Continue" onPress={() => setStep(4)} />
-        <Button title={t("onboarding.skip")} onPress={() => { patchP("education_level", null); setStep(4); }} />
+        <Button title="Continue" onPress={() => setStep(5)} />
+        <Button title={t("onboarding.skip")} onPress={() => { patchP("education_level", null); setStep(5); }} />
       </Screen>
     );
 
-  // Step 4: Financial knowledge
-  if (step === 4)
+  // Step 5: Financial knowledge
+  if (step === 5)
     return (
       <Screen>
         <Title text={t("personalization.knowledge_label")} sub={t("personalization.optional_note")} />
@@ -230,13 +298,13 @@ export default function Onboarding() {
             accessibilityLabel={`${t(opt.labelKey)}: ${t(opt.descKey)}`}
           />
         ))}
-        <Button title="Continue" onPress={() => setStep(5)} />
-        <Button title={t("onboarding.skip")} onPress={() => { patchP("financial_knowledge_level", null); setStep(5); }} />
+        <Button title="Continue" onPress={() => setStep(6)} />
+        <Button title={t("onboarding.skip")} onPress={() => { patchP("financial_knowledge_level", null); setStep(6); }} />
       </Screen>
     );
 
-  // Step 5: Explanation level
-  if (step === 5)
+  // Step 6: Explanation level
+  if (step === 6)
     return (
       <Screen>
         <Title text={t("personalization.explanation_label")} sub={t("personalization.optional_note")} />
@@ -250,13 +318,13 @@ export default function Onboarding() {
             accessibilityLabel={`${t(opt.labelKey)}: ${t(opt.descKey)}`}
           />
         ))}
-        <Button title="Continue" onPress={() => setStep(6)} />
-        <Button title={t("onboarding.skip")} onPress={() => { patchP("preferred_explanation_level", null); setStep(6); }} />
+        <Button title="Continue" onPress={() => setStep(7)} />
+        <Button title={t("onboarding.skip")} onPress={() => { patchP("preferred_explanation_level", null); setStep(7); }} />
       </Screen>
     );
 
-  // Step 6: Occupation
-  if (step === 6)
+  // Step 7: Occupation
+  if (step === 7)
     return (
       <Screen>
         <Title text={t("personalization.occupation_label")} sub={t("personalization.optional_note")} />
@@ -272,22 +340,27 @@ export default function Onboarding() {
             />
           ))}
         </ScrollView>
-        <Button title="Continue" onPress={() => setStep(7)} />
-        <Button title={t("onboarding.skip")} onPress={() => { patchP("occupation_status", null); setStep(7); }} />
+        <Button title="Continue" onPress={() => setStep(8)} />
+        <Button title={t("onboarding.skip")} onPress={() => { patchP("occupation_status", null); setStep(8); }} />
       </Screen>
     );
 
-  // Step 7: Review and submit
+  // Step 8: Review and submit
   return (
     <Screen>
       <Title text="Review your financial view" sub="Check the information before we build your Financial Twin." />
       <View style={styles.review}>
-        {Object.entries(form).filter(([key]) => !["gender", "city"].includes(key)).map(([key, value]) => (
+        {Object.entries(form).filter(([key]) => !["gender", "city", "consent_given"].includes(key)).map(([key, value]) => (
           <View key={key} style={styles.row}>
             <Text style={styles.key}>{key.replaceAll("_", " ")}</Text>
-            <Text style={styles.value}>{value || "—"}</Text>
+            <Text style={styles.value}>{String(value) || "—"}</Text>
           </View>
         ))}
+
+        <View style={styles.row}>
+          <Text style={styles.key}>data consent status</Text>
+          <Text style={styles.value}>{form.consent_given ? "Accepted ✓" : "Pending"}</Text>
+        </View>
 
         {personalization.education_level ? (
           <View style={styles.row}>
@@ -320,7 +393,7 @@ export default function Onboarding() {
         onPress={generate}
         disabled={busy}
       />
-      <Button title="Edit financial info" onPress={() => setStep(2)} disabled={busy} />
+      <Button title="Edit financial info" onPress={() => setStep(3)} disabled={busy} />
     </Screen>
   );
 }
@@ -428,5 +501,60 @@ const styles = StyleSheet.create({
   row: { marginBottom: 12 },
   key: { color: colors.muted, textTransform: "capitalize", fontSize: 12 },
   value: { color: colors.ink, fontSize: 16, fontWeight: "600", marginTop: 2 },
+  consentBox: {
+    backgroundColor: "#F8FAFC",
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 14,
+    padding: 14,
+    maxHeight: 250,
+    marginBottom: 16,
+  },
+  consentSectionTitle: {
+    fontSize: 13,
+    fontWeight: "800",
+    color: colors.ink,
+    marginTop: 8,
+    marginBottom: 2,
+  },
+  consentText: {
+    fontSize: 12,
+    color: colors.muted,
+    lineHeight: 18,
+  },
+  checkboxRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+    paddingHorizontal: 4,
+  },
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: colors.muted,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 10,
+    backgroundColor: "#fff",
+  },
+  checkboxChecked: {
+    backgroundColor: colors.purple,
+    borderColor: colors.purple,
+  },
+  checkboxCheckmark: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "800",
+  },
+  checkboxLabel: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: colors.ink,
+    flex: 1,
+    lineHeight: 18,
+  },
 });
+
 

@@ -53,6 +53,10 @@ export type ProfilePayload = {
   preferred_language: string;
   accessibility_mode: "standard" | "voice_first";
 
+  // Legal Consent & Privacy fields
+  consent_given?: boolean;
+  consent_given_at?: string | null;
+
   // PROMPT 8 personalization fields (all optional)
   date_of_birth?: string | null;
   education_level?: EducationLevel | null;
@@ -60,6 +64,7 @@ export type ProfilePayload = {
   preferred_explanation_level?: ExplanationLevel | null;
   occupation_status?: OccupationStatus | null;
 };
+
 
 export type ProfileResponse = ProfilePayload & {
   id: number;

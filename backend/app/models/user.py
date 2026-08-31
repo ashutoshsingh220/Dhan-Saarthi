@@ -42,8 +42,11 @@ class UserProfile(Base):
     financial_goal: Mapped[str] = mapped_column(String(255))
 
     risk_preference: Mapped[str] = mapped_column(String(30))
+    consent_given: Mapped[bool | None] = mapped_column(Boolean, nullable=True, default=False)
+    consent_given_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
 
     # --- PROMPT 8: Extended personalization profile fields (all nullable for backward compatibility) ---
     date_of_birth: Mapped[date | None] = mapped_column(Date, nullable=True)

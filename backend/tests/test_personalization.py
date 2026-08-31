@@ -252,3 +252,16 @@ def test_prompt8a_invalid_age_rejected():
     })
     assert res.status_code == 422
 
+
+def test_legal_data_privacy_consent_persisted():
+    """Verify that mandatory legal consent status and timestamp persist in user profile."""
+    token = _register_and_onboard("consent_test@p8.com", {
+        "consent_given": True,
+    })
+    res = client.get("/api/profile", headers={"Authorization": f"Bearer {token}"})
+    assert res.status_code == 200
+    data = res.json()
+    assert data["consent_given"] is True
+    assert data["consent_given_at"] is not None
+
+

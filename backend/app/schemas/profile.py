@@ -34,6 +34,11 @@ class ProfileUpsertRequest(BaseModel):
     preferred_language: str = Field(default="English", max_length=30)
     accessibility_mode: str = Field(default="standard", pattern="^(standard|voice_first)$")
 
+    # Legal Consent & Privacy fields
+    consent_given: Optional[bool] = Field(default=False)
+    consent_given_at: Optional[datetime] = None
+
+
 
     # --- PROMPT 8: personalization fields (all optional for backward compatibility) ---
     date_of_birth: Optional[date] = Field(default=None)
@@ -129,8 +134,11 @@ class ProfileResponse(BaseModel):
     risk_preference: str
     preferred_language: str
     accessibility_mode: str
+    consent_given: Optional[bool] = False
+    consent_given_at: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime
+
 
     # PROMPT 8 personalization fields
     date_of_birth: Optional[date] = None

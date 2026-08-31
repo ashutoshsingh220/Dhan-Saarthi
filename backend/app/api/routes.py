@@ -1,4 +1,5 @@
-from datetime import datetime
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -99,6 +100,8 @@ def _build_profile_response(profile: UserProfile) -> ProfileResponse:
     data["derived_age"] = derived_age
     data["total_savings"] = getattr(profile, "total_savings", 0.0) or 0.0
     data["monthly_savings"] = getattr(profile, "monthly_savings", 0.0) or getattr(profile, "savings", 0.0) or 0.0
+    data["consent_given"] = getattr(profile, "consent_given", False) or False
+    data["consent_given_at"] = getattr(profile, "consent_given_at", None)
     resp = ProfileResponse.model_validate(data)
     return resp
 
@@ -113,7 +116,7 @@ def get_profile(user: User = Depends(get_current_user)):
 @router.put("/profile", response_model=ProfileResponse)
 def upsert_profile(payload: ProfileUpsertRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     user.preferred_language, user.accessibility_mode = payload.preferred_language, payload.accessibility_mode
-    # Exclude language/accessibility (stored on User) and personalization/accessibility fields handled separately
+    # Exclude language/accessibility (stored on User) and personalization/accessibility/consent fields handled separately
     values = payload.model_dump(exclude={
         "preferred_language", "accessibility_mode",
         "date_of_birth", "education_level",
@@ -121,6 +124,7 @@ def upsert_profile(payload: ProfileUpsertRequest, user: User = Depends(get_curre
         "accessibility_mode_enabled", "accessibility_profile", "text_size_preference",
         "high_contrast_enabled", "reduce_motion_enabled", "simplified_interface_enabled",
         "voice_navigation_enabled", "auto_speak_important_results", "sequential_navigation_enabled",
+        "consent_given", "consent_given_at",
     })
     
     # Financial savings sync
@@ -142,21 +146,27 @@ def upsert_profile(payload: ProfileUpsertRequest, user: User = Depends(get_curre
         for key, value in values.items():
             setattr(profile, key, value)
 
-    # Apply personalization & accessibility fields (allow None to clear, set if key present in payload)
+    # Apply personalization, accessibility & legal consent fields
     extra_fields = [
         "date_of_birth", "education_level",
         "financial_knowledge_level", "preferred_explanation_level", "occupation_status",
         "accessibility_mode_enabled", "accessibility_profile", "text_size_preference",
         "high_contrast_enabled", "reduce_motion_enabled", "simplified_interface_enabled",
         "voice_navigation_enabled", "auto_speak_important_results", "sequential_navigation_enabled",
+        "consent_given", "consent_given_at",
     ]
     payload_dict = payload.model_dump(exclude_unset=True)
     for field in extra_fields:
         if field in payload_dict:
             setattr(profile, field, payload_dict[field])
+
+    if payload.consent_given and profile.consent_given_at is None:
+        profile.consent_given_at = datetime.now(timezone.utc)
+
     db.commit()
     db.refresh(profile)
     return _build_profile_response(profile)
+
 
 
 
