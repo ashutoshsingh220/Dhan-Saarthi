@@ -115,35 +115,6 @@ export default function HomeDashboard() {
     }
   };
 
-  if (loading && !refreshing) {
-    return (
-      <Screen style={styles.center}>
-        <ActivityIndicator size="large" color={colors.purple} />
-        <Text style={styles.loadingText}>Fetching your Financial Twin...</Text>
-      </Screen>
-    );
-  }
-
-  if (error || !twin || !user) {
-    return (
-      <Screen style={styles.center}>
-        <Text style={styles.errorTitle}>Unable to load Dashboard</Text>
-        <Text style={styles.errorMessage}>{error || "Your Financial Twin data is currently unavailable."}</Text>
-        <Button title="Retry Loading" onPress={onRefresh} />
-      </Screen>
-    );
-  }
-
-  const scoreInfo = getScoreCategory(twin.financial_health_score);
-  const income = profile ? Number(profile.monthly_income) : 0;
-  const expenses = profile ? Number(profile.monthly_expenses) : 0;
-  const savings = profile ? Number(profile.savings) : 0;
-  const surplus = income - expenses;
-  const goal = profile?.financial_goal || "Financial Growth";
-  const risk = profile?.risk_preference || twin.risk_level || "Moderate";
-
-  const insightText = getDeterministicInsight(income, expenses, savings, goal);
-
   const capabilityDomains = useMemo(() => [
     {
       id: "saarthi",
@@ -173,7 +144,6 @@ export default function HomeDashboard() {
       icon: "🎯",
       action: () => router.push("/domain/planning" as any),
     },
-
     {
       id: "market",
       title: "Market Intelligence",
@@ -203,6 +173,38 @@ export default function HomeDashboard() {
       action: () => router.push("/twin-detail" as any),
     },
   ], [t]);
+
+  if (loading && !refreshing) {
+    return (
+      <Screen style={styles.center}>
+        <ActivityIndicator size="large" color={colors.purple} />
+        <Text style={styles.loadingText}>Fetching your Financial Twin...</Text>
+      </Screen>
+    );
+  }
+
+  if (error || !twin || !user) {
+    return (
+      <Screen style={styles.center}>
+        <Text style={styles.errorTitle}>Unable to load Dashboard</Text>
+        <Text style={styles.errorMessage}>{error || "Your Financial Twin data is currently unavailable."}</Text>
+        <Button title="Retry Loading" onPress={onRefresh} />
+      </Screen>
+    );
+  }
+
+  const scoreInfo = getScoreCategory(twin.financial_health_score);
+  const income = profile ? Number(profile.monthly_income) : 0;
+  const expenses = profile ? Number(profile.monthly_expenses) : 0;
+  const savings = profile ? Number(profile.savings) : 0;
+  const surplus = income - expenses;
+  const goal = profile?.financial_goal || "Financial Growth";
+  const risk = profile?.risk_preference || twin.risk_level || "Moderate";
+
+  const insightText = getDeterministicInsight(income, expenses, savings, goal);
+
+
+
 
   return (
 
