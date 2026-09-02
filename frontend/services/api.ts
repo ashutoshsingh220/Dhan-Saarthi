@@ -110,7 +110,16 @@ export const api = {
   recalculateGoalPlan: (goal_id: string, token: string) =>
     request<FinancialGoal>(`/planning/goals/${goal_id}/recalculate`, { method: "POST" }, token),
   analyzeScamMessage: (message: string, token: string) =>
-    request<ScamScan>("/scam-shield/analyze", { method: "POST", body: JSON.stringify({ message }) }, token),
+    request<ScamScan>("/scam-shield/analyze", { method: "POST", body: JSON.stringify({ message }), headers: { "Content-Type": "application/json" } }, token),
+  analyzeScamImage: (imageUri: string, mimeType: string = "image/jpeg", token: string) => {
+    const formData = new FormData();
+    formData.append("file", {
+      uri: imageUri,
+      name: `screenshot.${mimeType.split("/")[1]}`,
+      type: mimeType,
+    } as any);
+    return request<ScamScan>("/scam-shield/analyze-image", { method: "POST", body: formData as any }, token);
+  },
   getScamHistory: (token: string) => request<ScamHistoryResponse>("/scam-shield/history", {}, token),
   getScamScanDetail: (scan_id: string, token: string) => request<ScamScan>(`/scam-shield/history/${scan_id}`, {}, token),
   deleteScamScan: (scan_id: string, token: string) =>

@@ -1,6 +1,7 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.orm import Session, joinedload
 
 from app.core.security import decode_access_token
 from app.db.session import get_db
@@ -13,7 +14,13 @@ def get_current_user(credentials: HTTPAuthorizationCredentials | None = Depends(
     if credentials is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
     subject = decode_access_token(credentials.credentials)
-    user = db.get(User, int(subject)) if subject and subject.isdigit() else None
+    
+    if subject and subject.isdigit():
+        stmt = select(User).options(joinedload(User.profile), joinedload(User.financial_twin)).where(User.id == int(subject))
+        user = db.scalar(stmt)
+    else:
+        user = None
+        
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired access token")
     return user
@@ -24,7 +31,10 @@ def get_current_user_optional(credentials: HTTPAuthorizationCredentials | None =
         return None
     try:
         subject = decode_access_token(credentials.credentials)
-        return db.get(User, int(subject)) if subject and subject.isdigit() else None
+        if subject and subject.isdigit():
+            stmt = select(User).options(joinedload(User.profile), joinedload(User.financial_twin)).where(User.id == int(subject))
+            return db.scalar(stmt)
+        return None
     except Exception:
         return None
 

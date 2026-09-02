@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from typing import Optional
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
@@ -23,14 +23,21 @@ class ScamIndicatorResponse(BaseModel):
     points: int
 
 
+class ScamIndicatorDetail(ScamIndicatorResponse):
+    pass
+
+
 class ScamScanResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
     id: str = Field(validation_alias="scan_uuid", serialization_alias="id")
     input_text: str
+    input_type: str = "text"
+    extracted_text: Optional[str] = None
     risk_score: int
     risk_level: str
     summary: str
     recommended_actions: list[str]
+    retrieved_evidence: list[dict] = []
     indicators: list[ScamIndicatorResponse] = []
     created_at: datetime
 

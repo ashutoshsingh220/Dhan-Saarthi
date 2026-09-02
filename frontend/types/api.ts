@@ -131,10 +131,22 @@ export type ScamIndicator = {
 export type ScamScan = {
   id: string;
   input_text: string;
+  input_type?: string;
+  extracted_text?: string;
   risk_score: number;
-  risk_level: "LOW" | "MODERATE" | "HIGH" | "CRITICAL";
+  risk_level: 'LOW' | 'MODERATE' | 'HIGH' | 'CRITICAL';
   summary: string;
   recommended_actions: string[];
+  retrieved_evidence?: {
+    id: string;
+    category: string;
+    title: string;
+    description: string;
+    example: string;
+    risk_indicators: string[];
+    recommended_action: string;
+    is_scam: boolean;
+  }[];
   indicators: ScamIndicator[];
   created_at: string;
 };

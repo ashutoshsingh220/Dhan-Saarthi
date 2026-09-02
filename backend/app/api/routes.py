@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select
+from fastapi import APIRouter, Depends, HTTPException, status, Query, File, UploadFile
+from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 
 
@@ -49,6 +49,8 @@ from app.services.personalization_service import calculate_age
 from app.services.planning_service import PlanningService
 from app.services.saarthi_service import SaarthiService
 from app.services.scam_detection_service import ScamDetectionService
+from app.services.scam_rag_service import rag_service
+from app.services.scam_ocr_service import ocr_service
 from app.services.scheme_eligibility_service import SchemeEligibilityService
 from app.services.scheme_recommendation_service import SchemeRecommendationService
 from app.services.scheme_service import SchemeService
@@ -215,13 +217,24 @@ def chat_with_saarthi_stream(payload: ChatMessageRequest, user: User = Depends(g
 
 
 @router.get("/saarthi/sessions", response_model=list[ChatSessionSummary])
-def list_chat_sessions(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    return saarthi_service.get_user_sessions(db=db, user=user)
+def list_chat_sessions(
+    user: User = Depends(get_current_user), 
+    db: Session = Depends(get_db),
+    limit: int = Query(20, ge=1, le=50),
+    offset: int = Query(0, ge=0)
+):
+    return saarthi_service.get_user_sessions(db=db, user=user, limit=limit, offset=offset)
 
 
 @router.get("/saarthi/sessions/{session_id}/messages", response_model=list[ChatMessageDetail])
-def get_chat_session_messages(session_id: str, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    return saarthi_service.get_session_messages(db=db, user=user, session_uuid=session_id)
+def get_chat_session_messages(
+    session_id: str, 
+    user: User = Depends(get_current_user), 
+    db: Session = Depends(get_db),
+    limit: int = Query(50, ge=1, le=100),
+    offset: int = Query(0, ge=0)
+):
+    return saarthi_service.get_session_messages(db=db, user=user, session_uuid=session_id, limit=limit, offset=offset)
 
 
 # --- SMART FINANCIAL PLANNING ENDPOINTS (PROMPT 4) ---
@@ -278,14 +291,66 @@ def recalculate_goal_plan(goal_id: str, user: User = Depends(get_current_user), 
 @router.post("/scam-shield/analyze", response_model=ScamScanResponse, status_code=status.HTTP_201_CREATED)
 def analyze_scam_message(payload: ScamAnalyzeRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     result = ScamDetectionService.analyze(payload.message)
+    evidence = rag_service.retrieve_similar_pattern(payload.message)
+    
     scan = ScamScan(
         user_id=user.id,
         input_text=payload.message,
+        input_type="text",
         risk_score=result["risk_score"],
         risk_level=result["risk_level"],
         summary=result["summary"],
     )
     scan.recommended_actions = result["recommended_actions"]
+    scan.retrieved_evidence = evidence
+    db.add(scan)
+    db.commit()
+    db.refresh(scan)
+
+    for ind in result["indicators"]:
+        indicator = ScamIndicator(
+            scan_id=scan.id,
+            indicator_type=ind["indicator_type"],
+            matched_text=ind["matched_text"],
+            severity=ind["severity"],
+            points=ind["points"],
+        )
+        db.add(indicator)
+    db.commit()
+    db.refresh(scan)
+    return scan
+
+@router.post("/scam-shield/analyze-image", response_model=ScamScanResponse, status_code=status.HTTP_201_CREATED)
+async def analyze_scam_image(file: UploadFile = File(...), user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if file.content_type not in ["image/jpeg", "image/png", "image/jpg"]:
+        raise HTTPException(status_code=400, detail="Invalid file type. Only JPEG and PNG are allowed.")
+    if file.size and file.size > 5 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="File too large. Maximum size is 5MB.")
+        
+    image_bytes = await file.read()
+    try:
+        extracted_text = ocr_service.extract_text(image_bytes)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Failed to process image or extract text.")
+        
+    if not extracted_text.strip():
+        # Fallback empty text to avoid breaking analysis
+        extracted_text = "No readable text found."
+        
+    result = ScamDetectionService.analyze(extracted_text)
+    evidence = rag_service.retrieve_similar_pattern(extracted_text)
+    
+    scan = ScamScan(
+        user_id=user.id,
+        input_text="[Image Upload]",
+        input_type="image",
+        extracted_text=extracted_text,
+        risk_score=result["risk_score"],
+        risk_level=result["risk_level"],
+        summary=result["summary"],
+    )
+    scan.recommended_actions = result["recommended_actions"]
+    scan.retrieved_evidence = evidence
     db.add(scan)
     db.commit()
     db.refresh(scan)
@@ -304,12 +369,19 @@ def analyze_scam_message(payload: ScamAnalyzeRequest, user: User = Depends(get_c
     return scan
 
 
+
 @router.get("/scam-shield/history", response_model=ScamHistoryResponse)
-def get_scam_history(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def get_scam_history(
+    user: User = Depends(get_current_user), 
+    db: Session = Depends(get_db),
+    limit: int = Query(50, ge=1, le=100),
+    offset: int = Query(0, ge=0)
+):
     scans = db.scalars(
-        select(ScamScan).where(ScamScan.user_id == user.id).order_by(ScamScan.created_at.desc())
+        select(ScamScan).where(ScamScan.user_id == user.id).order_by(ScamScan.created_at.desc()).limit(limit).offset(offset)
     ).all()
-    return ScamHistoryResponse(scans=scans, total_count=len(scans))
+    total_count = db.scalar(select(func.count(ScamScan.id)).where(ScamScan.user_id == user.id))
+    return ScamHistoryResponse(scans=scans, total_count=total_count)
 
 
 @router.get("/scam-shield/history/{scan_id}", response_model=ScamScanResponse)

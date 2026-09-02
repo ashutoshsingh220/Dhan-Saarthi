@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -144,7 +144,7 @@ export default function HomeDashboard() {
 
   const insightText = getDeterministicInsight(income, expenses, savings, goal);
 
-  const capabilityDomains = [
+  const capabilityDomains = useMemo(() => [
     {
       id: "saarthi",
       title: t("nav.saarthi"),
@@ -202,7 +202,7 @@ export default function HomeDashboard() {
       icon: "🧬",
       action: () => router.push("/twin-detail" as any),
     },
-  ];
+  ], [t]);
 
   return (
 
@@ -306,57 +306,6 @@ export default function HomeDashboard() {
         </View>
       </Pressable>
 
-      {/* C. FINANCIAL TWIN SNAPSHOT */}
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Profile Snapshot</Text>
-      </View>
-
-      <View style={styles.snapshotGrid}>
-        <View
-          style={styles.snapshotItem}
-          accessibilityLabel={`${t("dashboard.surplus")}: ₹${surplus.toLocaleString("en-IN")}`}
-        >
-          <Text style={styles.snapshotLabel}>{t("dashboard.surplus")}</Text>
-          <Text style={[styles.snapshotValue, { color: surplus >= 0 ? colors.purple : "#D32F2F" }]}>
-            ₹{surplus.toLocaleString("en-IN")}
-          </Text>
-        </View>
-        <View
-          style={styles.snapshotItem}
-          accessibilityLabel={`${t("dashboard.savings")}: ₹${savings.toLocaleString("en-IN")}`}
-        >
-          <Text style={styles.snapshotLabel}>{t("dashboard.savings")}</Text>
-          <Text style={styles.snapshotValue}>₹{savings.toLocaleString("en-IN")}</Text>
-        </View>
-        <View
-          style={styles.snapshotItem}
-          accessibilityLabel={`Primary Goal: ${goal}`}
-        >
-          <Text style={styles.snapshotLabel}>Primary Goal</Text>
-          <Text style={styles.snapshotValueSmall} numberOfLines={1}>
-            {goal}
-          </Text>
-        </View>
-        <View
-          style={styles.snapshotItem}
-          accessibilityLabel={`Risk Preference: ${risk}`}
-        >
-          <Text style={styles.snapshotLabel}>Risk Preference</Text>
-          <Text style={styles.snapshotValueSmall}>{risk.charAt(0).toUpperCase() + risk.slice(1)}</Text>
-        </View>
-      </View>
-
-      {/* D. AI INSIGHT CARD */}
-      <View
-        style={styles.insightCard}
-        accessibilityLabel={`AI Financial Twin Insight: ${insightText}`}
-      >
-        <View style={styles.insightHeader}>
-          <Text style={styles.insightIcon}>💡</Text>
-          <Text style={styles.insightTitle}>{t("dashboard.ai_insight")}</Text>
-        </View>
-        <Text style={styles.insightText}>{insightText}</Text>
-      </View>
 
       {/* E. CAPABILITY DOMAIN ENTRY POINTS */}
       <View style={styles.sectionHeader}>

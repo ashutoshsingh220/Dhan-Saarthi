@@ -154,11 +154,13 @@ class SaarthiService:
 
 
 
-    def get_user_sessions(self, db: Session, user: User) -> list[ChatSessionSummary]:
+    def get_user_sessions(self, db: Session, user: User, limit: int = 20, offset: int = 0) -> list[ChatSessionSummary]:
         sessions = db.scalars(
             select(ChatSession)
             .where(ChatSession.user_id == user.id)
             .order_by(ChatSession.updated_at.desc())
+            .limit(limit)
+            .offset(offset)
         ).all()
         return [
             ChatSessionSummary(
@@ -169,7 +171,7 @@ class SaarthiService:
             for s in sessions
         ]
 
-    def get_session_messages(self, db: Session, user: User, session_uuid: str) -> list[ChatMessageDetail]:
+    def get_session_messages(self, db: Session, user: User, session_uuid: str, limit: int = 50, offset: int = 0) -> list[ChatMessageDetail]:
         session = db.scalar(
             select(ChatSession).where(ChatSession.session_uuid == session_uuid)
         )
@@ -182,6 +184,8 @@ class SaarthiService:
             select(ChatMessage)
             .where(ChatMessage.session_id == session.id)
             .order_by(ChatMessage.created_at.asc())
+            .limit(limit)
+            .offset(offset)
         ).all()
 
         return [
