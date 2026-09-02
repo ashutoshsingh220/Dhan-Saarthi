@@ -2,7 +2,7 @@
   <img src="frontend/assets/branding/dhan-saarthi-logo.png" alt="Dhan Saarthi Official Logo" width="360"/>
 </p>
 
-<h1 align="center">⚡ DHAN SAARTHI (धन सारथी) ⚡</h1>
+<h1 align="center"> DHAN SAARTHI (धन सारथी) </h1>
 <h3 align="center">🚀 AI-Powered Personal Financial Companion & Deterministic Financial Twin Engine 🚀</h3>
 
 <p align="center">
