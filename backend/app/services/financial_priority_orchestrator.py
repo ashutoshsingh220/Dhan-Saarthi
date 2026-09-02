@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 class FinancialPriorityOrchestrator:
     """
-    Deterministic Cross-Module Priority Engine (Prompt 14 Part C).
+    Deterministic Cross-Module Priority Engine.
     Enforces a strict, transparent priority hierarchy across all Dhan Saarthi modules.
 
     Hierarchy:

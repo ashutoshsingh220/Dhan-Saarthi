@@ -237,7 +237,7 @@ def get_chat_session_messages(
     return saarthi_service.get_session_messages(db=db, user=user, session_uuid=session_id, limit=limit, offset=offset)
 
 
-# --- SMART FINANCIAL PLANNING ENDPOINTS (PROMPT 4) ---
+# --- SMART FINANCIAL PLANNING ENDPOINTS ---
 @router.post("/planning/goals", response_model=GoalDetailResponse, status_code=status.HTTP_201_CREATED)
 def create_goal(payload: GoalCreateRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     goal = planning_service.create_goal(
@@ -287,7 +287,7 @@ def recalculate_goal_plan(goal_id: str, user: User = Depends(get_current_user), 
     return goal
 
 
-# --- SCAM SHIELD ENDPOINTS (PROMPT 5) ---
+# --- SCAM SHIELD ENDPOINTS ---
 @router.post("/scam-shield/analyze", response_model=ScamScanResponse, status_code=status.HTTP_201_CREATED)
 def analyze_scam_message(payload: ScamAnalyzeRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     result = ScamDetectionService.analyze(payload.message)
@@ -402,7 +402,7 @@ def delete_scam_scan(scan_id: str, user: User = Depends(get_current_user), db: S
     return None
 
 
-# --- FINANCIAL LITERACY ENDPOINTS (PROMPT 6) ---
+# --- FINANCIAL LITERACY ENDPOINTS ---
 @router.get("/learn/modules", response_model=list[LearningModuleResponse])
 def get_learning_modules(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     return LearningService.get_modules(db=db, user=user)
@@ -450,7 +450,7 @@ def submit_learning_quiz(module_id: str, payload: QuizSubmissionRequest, user: U
         raise HTTPException(status_code=400, detail=str(e))
 
 
-# --- GOVERNMENT SCHEME DISCOVERY ENDPOINTS (PROMPT 9) ---
+# --- GOVERNMENT SCHEME DISCOVERY ENDPOINTS ---
 @router.put("/profile/support-context", response_model=SupportContextResponse)
 def update_support_context(payload: SupportContextUpdateRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     profile = user.profile
@@ -519,7 +519,7 @@ from app.services.market_service import MarketService
 
 
 
-# --- PROMPT 10: MARKET INTELLIGENCE ENDPOINTS ---
+# --- MARKET INTELLIGENCE ENDPOINTS ---
 
 @router.get("/market/overview", response_model=MarketOverviewResponse)
 def get_market_overview(
@@ -555,7 +555,7 @@ from app.services.recommendation_service import RecommendationService
 from app.services.user_financial_intelligence_service import UserFinancialIntelligenceService
 
 
-# --- PROMPT 11: RECOMMENDATION & PORTFOLIO GUIDANCE ENDPOINTS ---
+# --- RECOMMENDATION & PORTFOLIO GUIDANCE ENDPOINTS ---
 
 @router.get("/recommendations", response_model=PersonalizedRecommendationResponse)
 def get_personalized_recommendation(
@@ -573,7 +573,7 @@ def generate_personalized_recommendation(
     return RecommendationService.generate_recommendations(db=db, user=user)
 
 
-# --- PROMPT 14: SYSTEM INTEGRATION & ORCHESTRATION ENDPOINTS ---
+# --- SYSTEM INTEGRATION & ORCHESTRATION ENDPOINTS ---
 
 @router.get("/dashboard/brief")
 def get_todays_financial_brief(
@@ -581,7 +581,7 @@ def get_todays_financial_brief(
     db: Session = Depends(get_db),
 ):
     """
-    Returns Today's Financial Brief (Prompt 14 Part B).
+    Returns Today's Financial Brief.
     Deterministic personalized daily intelligence summary.
     """
     return UserFinancialIntelligenceService.generate_todays_financial_brief(user, db)
@@ -593,7 +593,7 @@ def get_user_intelligence_snapshot(
     db: Session = Depends(get_db),
 ):
     """
-    Returns Unified User Financial Intelligence Snapshot (Prompt 14 Part A).
+    Returns Unified User Financial Intelligence Snapshot.
     Central deterministic aggregation of all modules.
     """
     return UserFinancialIntelligenceService.get_user_intelligence_snapshot(user, db)
@@ -602,7 +602,7 @@ def get_user_intelligence_snapshot(
 @router.get("/system/health")
 def system_health_check(db: Session = Depends(get_db)):
     """
-    Backend diagnostic health endpoint (Prompt 14 Part L).
+    Backend diagnostic health endpoint.
     Reports service availability without exposing secrets.
     """
     db_status = "healthy"

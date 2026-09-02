@@ -136,7 +136,7 @@ export const api = {
   getLearningProgress: (token: string) => request<LearningProgressSummary>("/learn/progress", {}, token),
   getLearningRecommendations: (token: string) =>
     request<LearningRecommendation[]>("/learn/recommendations", {}, token),
-  // --- PROMPT 9: Government Scheme methods ---
+  // --- Government Scheme methods ---
   getSchemeCategories: (token?: string) => request<SchemeCategoryCount[]>("/schemes/categories", {}, token),
   getSchemeRecommendations: (token: string) => request<SchemeRecommendation[]>("/schemes/recommendations", {}, token),
   getSchemes: (category?: string, search?: string, token?: string) => {
@@ -151,15 +151,15 @@ export const api = {
     request<SchemeEligibility>(`/schemes/${scheme_id}/eligibility-check`, { method: "POST" }, token),
   updateSupportContext: (payload: SupportContextPayload, token: string) =>
     request<SupportContextResponse>("/profile/support-context", { method: "PUT", body: JSON.stringify(payload) }, token),
-  // --- PROMPT 10: Market Intelligence methods ---
+  // --- Market Intelligence methods ---
   getMarketOverview: (token?: string, forceRefresh?: boolean) =>
     request<MarketOverview>(`/market/overview${forceRefresh ? "?force_refresh=true" : ""}`, {}, token),
   getAssetDetail: (symbol: string, token?: string) => request<MarketAsset>(`/market/assets/${symbol}`, {}, token),
   refreshMarket: (token: string) => request<MarketOverview>("/market/refresh", { method: "POST" }, token),
-  // --- PROMPT 11: Personalized Recommendation methods ---
+  // --- Personalized Recommendation methods ---
   getRecommendation: (token: string) => request<PersonalizedRecommendation>("/recommendations", {}, token),
   generateRecommendation: (token: string) => request<PersonalizedRecommendation>("/recommendations/generate", { method: "POST" }, token),
-  // --- PROMPT 14: System Orchestration methods ---
+  // --- System Orchestration methods ---
   getTodaysBrief: (token: string) => request<any>("/dashboard/brief", {}, token),
   getFinancialSnapshot: (token: string) => request<any>("/dashboard/snapshot", {}, token),
   getSystemHealth: () => request<any>("/system/health", {}),

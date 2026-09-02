@@ -32,7 +32,7 @@ export default function MoreTab() {
     updatePreferences,
   } = useAccessibility();
 
-  // --- PROMPT 8: Personalization state ---
+  // --- Personalization state ---
 
   const [profile, setProfile] = useState<ProfileResponse | null>(null);
   const [personAge, setPersonAge] = useState("");
@@ -343,7 +343,7 @@ export default function MoreTab() {
         </View>
 
 
-        {/* PERSONALIZATION SETTINGS (PROMPT 8) */}
+        {/* PERSONALIZATION SETTINGS */}
 
         {profile && (
           <View style={styles.card}>
