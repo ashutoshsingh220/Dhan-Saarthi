@@ -2,21 +2,43 @@
   <img src="frontend/assets/branding/dhan-saarthi-logo.png" alt="Dhan Saarthi Official Logo" width="360"/>
 </p>
 
-# ⚡ Dhan Saarthi (धन सारथी)
+<h1 align="center"> DHAN SAARTHI (धन सारथी) </h1>
+<h3 align="center">🚀 AI-Powered Personal Financial Companion & Deterministic Financial Twin Engine 🚀</h3>
+
+<p align="center">
+  <b><i>Guiding Dreams. Empowering Futures. Built for 1.4 Billion Indians.</i></b>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/React_Native-Expo_SDK_52-61DAFB?style=for-the-badge&logo=react" alt="Expo SDK 52"/>
+  <img src="https://img.shields.io/badge/TypeScript-Strict_0_Errors-3178C6?style=for-the-badge&logo=typescript" alt="TypeScript"/>
+  <img src="https://img.shields.io/badge/Backend-Python_3.11_%7C_FastAPI-3776AB?style=for-the-badge&logo=fastapi" alt="FastAPI"/>
+  <img src="https://img.shields.io/badge/AI_Engine-Google_Gemini-8E44AD?style=for-the-badge&logo=google-gemini" alt="Google Gemini"/>
+  <img src="https://img.shields.io/badge/Tests-Pytest_Passing-success?style=for-the-badge&logo=pytest" alt="Pytest Passing"/>
+</p>
+
+---
+
+## 🌟 Executive Overview
 
 > **"Financial clarity for everyone. Deterministic intelligence. AI empathy."**
 
-**Dhan Saarthi** is an end-to-end agentic financial companion system that unifies authoritative deterministic financial calculations, multi-modal scam detection (OCR + RAG), personalized government scheme discovery, and live market intelligence into a single, accessible mobile experience. It is designed to bridge the financial literacy gap across India with native **Multilingual Support**:
+**Dhan Saarthi (धन सारथी)** is an enterprise-grade, accessibility-first, AI-driven personal financial companion designed to solve financial fragmentation and exclusion across urban, rural, low-literacy, and visually-impaired demographics in India.
 
+Built around a **Deterministic Financial Twin Engine**, Dhan Saarthi translates raw income, expense, and savings data into an authoritative **Financial Health Score (0–100)**, real-time risk profile, personalized goal planning, fraud protection, government scheme discovery, and live market intelligence.
+
+Dhan Saarthi features native **Multilingual Support** for the following languages:
 1. **English (`en`)**
 2. **हिन्दी — Hindi (`hi`)**
 3. **Hinglish (`hi-en`)**
 
+> 💡 **Core Engineering Rule**: No AI models hallucinate financial calculations. All metrics (Health Scores, Buffer Days, Goal Feasibility, Allocation Ranges, Scam Risk Scores) are computed by **authoritative Python deterministic engines**, while generative AI acts as the empathetic, multi-lingual companion guided by a **Master Context Orchestrator**.
+
 ---
 
-## 🏛️ System Component Separation
+## 🏛️ SYSTEM COMPONENT SEPARATION
 
-To maintain architectural clarity and prevent AI hallucinations in financial math, our codebase enforces a strict separation between deterministic engines and generative AI orchestrators:
+To maintain architectural clarity, our codebase enforces a strict separation between deterministic engines and generative AI orchestrators:
 
 | Component | Layer | Verified Implementation in Repository |
 | :--- | :--- | :--- |
@@ -29,106 +51,97 @@ To maintain architectural clarity and prevent AI hallucinations in financial mat
 
 ---
 
-## 📐 Pipeline Architecture
+## 🏗️ SYSTEM ARCHITECTURE & DATA FLOW
 
-```text
-Dhan Saarthi — End-to-End Intelligence Pipeline
+```mermaid
+flowchart TB
+    subgraph Client ["📱 Client Layer (React Native + Expo SDK 52)"]
+        UI[Home Dashboard & Intelligence Cards]
+        Voice[Voice-First & Streaming Interface]
+        Acc[5 Accessibility Profiles & Voice Navigation]
+    end
 
-                         ┌───────────────────────────┐
-                         │       USER / BUYER        │
-                         │                           │
-                         │ "Is this SMS asking for   │
-                         │  my UPI PIN a scam?"      │
-                         │    [+ Uploads Image]      │
-                         └─────────────┬─────────────┘
-                                       │
-                                       │ (1) Request + Image Payload
-                                       ▼
-    ╔═════════════════════════════════════════════════════════════════╗
-    ║                  FASTAPI BACKEND ORCHESTRATOR                   ║
-    ║                                                                 ║
-    ║  • JWT Authentication Validation                                ║
-    ║  • Rate Limiting (60 req / min)                                 ║
-    ║  • Request Routing                                              ║
-    ╚═════════════════════════════════════════════════════════════════╝
-                                       │
-               ┌───────────────────────┼───────────────────────┐
-               │                       │                       │
-               ▼ (2a) Scam Check       ▼ (2b) Twin Sync        ▼ (2c) Market Data
-     ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-     │   SCAM SHIELD   │     │ FINANCIAL TWIN  │     │  MARKET ENGINE  │
-     │  (OCR + RAG)    │     │  (Score 0-100)  │     │   (Live Data)   │
-     └────────┬────────┘     └────────┬────────┘     └────────┬────────┘
-              │                       │                       │
-              └───────────────────────┼───────────────────────┘
-                                      │
-                                      │ (3) Deterministic Data Aggregation
-                                      ▼
-    ╔═════════════════════════════════════════════════════════════════╗
-    ║                   MASTER CONTEXT BUILDER                        ║
-    ║                                                                 ║
-    ║   Aggregated State:                                             ║
-    ║   • Twin Status: 65/100 (Good Progress), 1.5mo Buffer           ║
-    ║   • Scam Output: [HIGH RISK] Suspicious domain matched          ║
-    ║   • User Profile: Visual Assist Mode, Language: Hindi           ║
-    ║                                                                 ║
-    ║   ─── SERVER-SIDE AI GUARDRAIL INJECTION ─────────────────────  ║
-    ║   Rule 1: Never invent numbers, strictly use Twin data.         ║
-    ║   Rule 2: Respond in the user's preferred language natively.    ║
-    ╚═════════════════════════════════════════════════════════════════╝
-                                      │
-                                      │ (4) Hydrated Context Payload
-                                      ▼
-    ╔═════════════════════════════════════════════════════════════════╗
-    ║                  GEMINI 1.5 PRO / FLASH ENGINE                  ║
-    ║                                                                 ║
-    ║  • Generates empathetic, actionable response based ONLY on      ║
-    ║    the deterministic context provided.                          ║
-    ╚═════════════════════════════════════════════════════════════════╝
-                                      │
-                                      │ (5) Response Stream
-                                      ▼
-                         ┌───────────────────────────┐
-                         │   CLIENT PRESENTATION     │
-                         │                           │
-                         │ • Accessible UI Render    │
-                         │ • Voice Synthesis (TTS)   │
-                         └───────────────────────────┘
+    subgraph Backend ["⚡ Backend Orchestration Layer (FastAPI + Python 3.11)"]
+        API[FastAPI Router & Security Isolation]
+        Priority[Financial Priority Orchestrator]
+        Snapshot[User Financial Intelligence Snapshot Generator]
+        Brief[Today's Financial Brief Service]
+    end
+
+    subgraph DeterministicEngines ["🧮 Deterministic & Rule-Based Engines"]
+        TwinEng[Financial Twin Score Engine 0-100]
+        GoalEng[Smart Goal Feasibility Engine]
+        RecEng[Surplus Allocation Guidance Range Calculator]
+        SchemeEng[Government Scheme Eligibility Ranker]
+        MarketEng[Market Pulse & Caching Engine]
+        ScamEng[Scam Shield Rule-Based Analyzer]
+    end
+    
+    subgraph AIEngine ["🧠 AI Intelligence & RAG Layers"]
+        ContextBuilder[Master Context Orchestrator]
+        ScamRAG[Scam Shield RAG Evidence Fetcher]
+        ScamOCR[Screenshot OCR Pipeline]
+        Gemini[Google Gemini API Engine]
+    end
+
+    UI & Voice & Acc <--> API
+    API --> Priority & Snapshot & Brief
+    Snapshot & Priority <--> DeterministicEngines
+    DeterministicEngines --> ContextBuilder
+    API --> ScamOCR --> ScamEng
+    ScamEng <--> ScamRAG
+    ContextBuilder --> Gemini
+    Gemini --> Voice & UI
 ```
 
 ---
 
-## 🔥 Core Capabilities & Technical Highlights
+## 🔥 CORE CAPABILITIES & FEATURES
 
-### 1. 🛡️ Scam Shield (Advanced Pipeline)
-- **Screenshot OCR:** We utilize an optimized OpenCV pipeline (Grayscale, CLAHE Contrast, Denoising, Otsu Thresholding) alongside PyTesseract to accurately extract text from low-quality user screenshots.
-- **RAG Knowledge Base:** Employs Gemini vectors (`text-embedding-004`) to match extracted text dynamically against an in-memory knowledge base of verified legitimate banking alerts and known phishing templates.
+### 1. 🧬 Financial Twin & Health Score
+Computes a transparent, deterministic **Financial Health Score (0–100)** based on surplus ratios, liquid savings buffer months, and expense ratios. Classifies user portfolios dynamically (`Strong Position`, `Good Progress`, `Building Foundation`, `Needs Attention`).
 
-### 2. 📉 Scalable, High-Performance Infrastructure
-- **Query Optimization:** Strict SQLAlchemy `joinedload()` implementation prevents N+1 explosive database queries on heavily relational data.
-- **Pagination & Throttling:** API is secured with IP-based rate limiting and cursor-based pagination on heavy data pipelines (like chat history).
-- **Frontend Memory Integrity:** The React Native UI utilizes strict `FlatList` component architectures for rendering UI grids, preserving device memory across lower-end mobile hardware.
+### 2. 🛡️ Scam Shield (Advanced RAG + OCR Upgrade)
+- **Screenshot OCR:** Users can upload images of suspicious messages. The backend uses an optimized OpenCV pipeline (Grayscale, CLAHE Contrast, Denoising, Otsu Thresholding) combined with PyTesseract to extract text safely.
+- **RAG Knowledge Base:** Employs Gemini `text-embedding-004` to fetch vectors dynamically against an in-memory knowledge base of verified legitimate Indian banking alerts and known phishing templates.
+- **Deterministic Evaluation:** Rule-based heuristics flag urgency, untrusted domains, and UPI requests.
 
-### 3. 🔒 Mandatory Data Privacy & Security
-The onboarding pipeline is strictly gated by an explicit consent and legal privacy agreement before processing user demographics. 
+### 3. 📉 Scalable, High-Performance Infrastructure
+- **Query Optimization:** Strict SQLAlchemy `joinedload()` implementation prevents N+1 explosive database queries.
+- **Pagination & Rate Limiting:** API is secured with IP-based rate limiting (60/min) and offset/limit pagination on heavy data pipelines (like chat history).
+- **Frontend Memory Integrity:** Implements `FlatList` component architectures for rendering UI grids, preserving device memory across low-end mobile devices.
+
+### 4. 🌾 Government Scheme Discovery Engine
+Curated catalog of 10 verified schemes (PM-KISAN, PMFBY, PMMY Mudra, Stand-Up India, etc.). Evaluates state, district, urban/rural classification, farming activities, and business sectors for deterministic eligibility matching.
+
+### 5. 📈 Live Market Intelligence
+Integrated live tracking of NIFTY 50, SENSEX, GOLD, SILVER, and USD/INR. Features robust failovers from Alpha Vantage APIs to public endpoint scraping. Includes a caching layer (300s TTL) with live status badges (`LIVE`, `STALE`) and AI-generated educational insights on daily movements.
+
+### 6. 🎙️ Voice-First Accessibility
+Designed for absolute inclusivity. Offers 5 user profiles: `VISUAL_ASSIST`, `LOW_LITERACY`, `ELDERLY_FRIENDLY`, `VOICE_ASSIST`, `STANDARD`. Features text-scaling, large hit targets, sequential speech navigation, and server-sent events (SSE) streaming APIs for real-time auditory chatbot feedback.
+
+### 7. 🔒 Mandatory Data Privacy & Security
+The onboarding pipeline mandates an explicit consent and legal privacy agreement before processing user demographics. 
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ TECH STACK
 
 | Component | Technology | Description |
 |---|---|---|
-| **Mobile Frontend** | React Native (Expo SDK 52) | Cross-platform iOS, Android & Web app |
-| **Language** | TypeScript | Strict Mode enabled |
+| **Mobile Frontend** | React Native (Expo) | Cross-platform iOS, Android & Web app |
+| **Language** | TypeScript | Strict Mode (`0 errors`) |
 | **Routing** | Expo Router | File-based typed routes |
 | **Backend API** | Python 3.11 & FastAPI | High-performance async REST framework |
 | **Database** | PostgreSQL / SQLite | SQLAlchemy 2.0 ORM |
+| **Authentication** | OAuth2 JWT | Secure stateless authentication |
 | **AI LLM & Embeddings**| Google Gemini Pro | Orchestration & RAG retrieval |
+| **Image Processing** | OpenCV + Tesseract | Screenshot text extraction (Scam Shield) |
 | **Testing** | Pytest | Full backend unit/integration testing suite |
 
 ---
 
-## 🚀 Quick Start & Local Setup
+## 🚀 QUICK START & LOCAL SETUP
 
 ### Backend Setup
 ```powershell
